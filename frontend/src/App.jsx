@@ -3,8 +3,9 @@ import './App.css';
 import { Route, Switch } from 'react-router-dom';
 
 // Components
-import HelloWorld from './HelloWorld/HelloWorld.jsx'
-
+import MainDiv from './MainDiv/MainDiv.jsx'
+import HomeDiv from './HomeDiv/HomeDiv.jsx'
+import NavBar from './NavBar/NavBar.jsx'
 
 const My404 = () => {
   return(
@@ -18,8 +19,11 @@ const My404 = () => {
 function App() {
   return (
     <div className="App">
+      {/* for animation perhaps <canvas className="background"></canvas> */}
+      <NavBar />
       <Switch>
-        <Route exact path="/hello" render={props => <HelloWorld hello="Hello"/> } />
+        <Route exact path="/" render={props => <HomeDiv/> } />
+        <Route exact path="/game" render={props => <MainDiv/> } />
         <Route component={ My404 } />
       </Switch>
     </div>

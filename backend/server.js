@@ -48,7 +48,7 @@ console.log(io)
 
 io.on("connection", (client) => {
 
-  console.log(client.id + " connected");
+  console.log(client.id + " has connected");
 
   client.on("disconnect", () => console.log(client.id + " disconnected"));
 

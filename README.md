@@ -11,7 +11,7 @@
 
 ### USER STORIES
 1. User goes to homepage
-2. User clicks start game (Stretch: User logs in)
+2. User enters name and clicks start game (Stretch: User logs in)
 3. (Stretch: User is brought to their profile page and selects start game)
 4. User enters game (***With $10000***) and game board shows
 5. The poker game (Texas-hold-em) starts when 5-6 players join
