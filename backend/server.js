@@ -50,11 +50,15 @@ io.on("connection", (client) => {
 
   console.log(client.id + " has connected");
 
+  client.on('message', (message) => {
+    io.emit('newMessage', message)
+    })
+
   client.on("disconnect", () => console.log(client.id + " disconnected"));
 
 
-
-
-
-
 });
+
+// io.listen(process.env.PORT || 9000, ()=>{
+//     console.log("Socket Is On")
+// })
