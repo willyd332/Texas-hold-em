@@ -48,6 +48,7 @@ const io = socketIo(server);
 io.on("connection", (socket) => {
 
   console.log(socket.id + " has connected");
+  socket.emit('sendId', socket.id)
 
   socket.on('message', (message) => {
     io.sockets.emit('newMessage', message);

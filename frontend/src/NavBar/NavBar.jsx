@@ -1,4 +1,5 @@
 import React from 'react';
+import {SocketContext} from '../SocketContext/SocketContext.jsx'
 import {
   Collapse,
   Navbar,
@@ -26,6 +27,7 @@ class NavBar extends React.Component {
       isOpen: !this.state.isOpen
     });
   }
+
   render() {
     return (
       <div>
@@ -35,7 +37,7 @@ class NavBar extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink>Player Name</NavLink>
+                <NavLink>{this.context}</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink>$$$$$$</NavLink>
@@ -64,6 +66,6 @@ class NavBar extends React.Component {
     );
   }
 }
-
+NavBar.contextType = SocketContext;
 
 export default NavBar
