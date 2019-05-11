@@ -12,8 +12,10 @@ div {
 .cards-box, .chat-box, .user-info{
   height: 20vh;
 }
-
-
+::-webkit-scrollbar {
+    background: transparent;
+    width: 0px;
+}
 #chatBigDiv{
   height: 75%;
   overflow: scroll;
