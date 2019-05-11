@@ -1,42 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import openSocket from 'socket.io-client'
+import React, { Component } from 'react';
 
-function ChatBox(props){
+// Components
+import ChatView from '../ChatView/ChatView.jsx';
 
-  const [currMessage,setCurrMessage] = useState('')
-  const [recievedMessage,setRecievedMessage] = useState('')
-  const socket = openSocket('http://localhost:9000')
+class ChatBox extends Component{
+  constructor(props){
+    super(props)
 
-
-  useEffect(() => {
-    listenForMessage()
-  },[])
-
-  function listenForMessage(){
-    socket.on('newMessage', (message) => {
-      setRecievedMessage(message)
+    this.state = {
+      currMessage: '',
+      messageList: [],
+    }
+    props.socket.on('newMessage', (message) => {
+      this.setState({
+        messageList: this.state.messageList.concat([message])
     });
-  }
-  function handleChange(e){
-    setCurrMessage(e.target.value)
-  }
-  function handleSubmit(e){
-    e.preventDefault()
-    socket.emit('message', currMessage);
-    setCurrMessage('')
+  });
   }
 
+  handleChange = (e) => {
+    this.setState({
+      currMessage: e.target.value,
+    })
+  }
+  handleSubmit = (e) => {
+    e.preventDefault()
+    this.props.socket.emit('message', this.state.currMessage);
+    this.setState({
+      currMessage: '',
+    })
+  }
+render(){
   return(
     <div className="chat-box">
-      <p>
-        {recievedMessage}
-      </p>
-      <form onSubmit={handleSubmit}>
-        <input onChange={handleChange} value={currMessage}></input>
-        <input type="submit"></input>
+      <ChatView socket={this.props.socket} messages={this.state.messageList} />
+      <form onSubmit={this.handleSubmit}>
+        <input className="messageInput" placeholder="Write Something" onChange={this.handleChange} value={this.state.currMessage}></input>
       </form>
     </div>
   );
+}
 }
 
 

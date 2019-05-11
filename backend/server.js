@@ -43,18 +43,17 @@ const server = app.listen(process.env.PORT || 9000, ()=>{
 
 
 const io = socketIo(server);
-console.log(io)
 
 
-io.on("connection", (client) => {
+io.on("connection", (socket) => {
 
-  console.log(client.id + " has connected");
+  console.log(socket.id + " has connected");
 
-  client.on('message', (message) => {
-    io.emit('newMessage', message)
-    })
+  socket.on('message', (message) => {
+    io.sockets.emit('newMessage', message);
+    });
 
-  client.on("disconnect", () => console.log(client.id + " disconnected"));
+  socket.on("disconnect", () => console.log(socket.id + " disconnected"));
 
 
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Route, Switch } from 'react-router-dom';
+import openSocket from 'socket.io-client'
 
 // Components
 import MainDiv from './MainDiv/MainDiv.jsx'
@@ -15,6 +16,7 @@ const My404 = () => {
     )
 }
 
+const socket = openSocket('http://localhost:9000');
 
 function App() {
   return (
@@ -23,11 +25,11 @@ function App() {
       <NavBar />
       <Switch>
         <Route exact path="/" render={props => <HomeDiv/> } />
-        <Route exact path="/game" render={props => <MainDiv/> } />
+        <Route exact path="/game" render={props => <MainDiv socket={socket}/> } />
         <Route component={ My404 } />
       </Switch>
     </div>
   );
 }
 
-export default App;
+export {App, socket};
