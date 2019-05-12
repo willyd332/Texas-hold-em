@@ -10,7 +10,7 @@ div {
   height: 35vh;
 }
 .cards-box, .chat-box, .user-info{
-  height: 20vh;
+  height: 25vh;
 }
 ::-webkit-scrollbar {
     background: transparent;

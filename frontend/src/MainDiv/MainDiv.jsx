@@ -34,7 +34,7 @@ function HelloWorld(props){
       <Row>
         <Col xs="2"><CardsBox/></Col>
         <Col xs="5"><UserInfo/></Col>
-        <Col xs="5"><ChatBox socket={props.socket}/></Col>
+        <Col xs="5"><ChatBox/></Col>
       </Row>
     </Container>
   );

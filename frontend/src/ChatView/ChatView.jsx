@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 function ChatView(props){
 
   const allMessages = props.messages.map((message, index) =>{
-    return <span key={index} className='message' >> {message}<br/></span>
+    return <span key={index} className='message' ><strong>{message.user}></strong> {message.message}<br/></span>
   })
 
   let messagesEnd;

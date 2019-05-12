@@ -4,6 +4,13 @@ import React from 'react';
 import { Container, Row, Jumbotron, Col, Button } from 'reactstrap';
 
 function HelloWorld(props){
+
+  const [username,setUsername] = React.useState('')
+
+  const handleChange = (e) => {
+    setUsername(e.target.value)
+  }
+
   return(
     <Container>
       <Jumbotron fluid>
@@ -13,10 +20,15 @@ function HelloWorld(props){
         </Container>
       </Jumbotron>
       <Row>
-        <h1>INPUT NAME HERE</h1>
+        <form onSubmit={(e)=>{
+          e.preventDefault()
+          props.setUser(username)
+        }}>
+          <input onChange={handleChange} value={username} placeholder={username}/>
+          <input type="submit" />
+        </form>
       </Row>
       <Row>
-        <Button href="/game">START GAME</Button>
       </Row>
     </Container>
   );

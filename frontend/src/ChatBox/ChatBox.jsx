@@ -1,45 +1,42 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
+import {socket} from '../SocketContext/SocketContext.jsx'
 
 // Components
 import ChatView from '../ChatView/ChatView.jsx';
 
-class ChatBox extends Component{
-  constructor(props){
-    super(props)
+function ChatBox(props) {
 
-    this.state = {
-      currMessage: '',
-      messageList: [],
-    }
-    props.socket.on('newMessage', (message) => {
-      this.setState({
-        messageList: this.state.messageList.concat([message])
+  const [messageList,setMessageList] = useState([]);
+  const [currMessage,setCurrMessage] = useState('');
+
+  useEffect(()=>{
+    listenForMessage();
+  },[messageList])
+
+  const listenForMessage = () => {
+    socket.on('newMessage', (message) => {
+      setMessageList(messageList.concat([message]));
+      socket.off('newMessage');
     });
-  });
   }
 
-  handleChange = (e) => {
-    this.setState({
-      currMessage: e.target.value,
-    })
+  const handleChange = (e) => {
+    setCurrMessage(e.target.value)
   }
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    this.props.socket.emit('message', this.state.currMessage);
-    this.setState({
-      currMessage: '',
-    })
+    socket.emit('message', currMessage);
+    setCurrMessage('');
   }
-render(){
-  return(
+
+  return (
     <div className="chat-box">
-      <ChatView socket={this.props.socket} messages={this.state.messageList} />
-      <form onSubmit={this.handleSubmit}>
-        <input className="messageInput" placeholder="Write Something" onChange={this.handleChange} value={this.state.currMessage}></input>
+      <ChatView messages={messageList}/>
+      <form onSubmit={handleSubmit}>
+        <input className="messageInput" placeholder="Write Something" onChange={handleChange} value={currMessage}></input>
       </form>
     </div>
-  );
-}
+  )
 }
 
 
