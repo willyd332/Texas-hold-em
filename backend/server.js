@@ -55,8 +55,14 @@ class Game {
 }
 class User {
   constructor(socket, name) {
-    this.socket = socket;
+    this.socketId = socket.id;
     this.name = name;
+    this.hand = {card1: 'Ace', card2: 'Ace',};
+    this.money = 10000;
+    this.bettingRoundStatus = '';
+    this.betAmount = null;
+    this.cardValue = null;
+    this.playing = false;
   }
 }
 
@@ -86,7 +92,12 @@ const joinGame = (newUser) => {
   return (room)
 }
 
-const allGames = []
+const findGame = (room) => {
+  console.log(currGames)
+  const foundGame = currGames.filter(game => game.room === room);
+  console.log(foundGame)
+  return foundGame[0];
+}
 
 io.on("connection", (socket) => {
 
@@ -107,21 +118,29 @@ io.on("connection", (socket) => {
     socket.join(room)
     console.log(room)
     socket.emit('room', room);
+    const game = findGame(room);
+    console.log(game);
+    io.to(room).emit('renderGame', game);
+    io.to(room).emit('gameStart')
   })
 
   socket.on("disconnect", () => {
     console.log(socket.id + " disconnected")
 
+    let thisGame;
     currGames.forEach((game) => {
       game.users.forEach((user, index) => {
-        if (user.socket.id === socket.id) {
+        if (user.socketId === socket.id) {
           game.users.splice(index, 1);
-          console.log(game)
+          thisGame = game;
         };
       });
     });
-
+    if (thisGame){
+    io.to(thisGame.room).emit('renderGame', thisGame);
+  }
   });
 
 
+// -------------------- end of socket.io
 });

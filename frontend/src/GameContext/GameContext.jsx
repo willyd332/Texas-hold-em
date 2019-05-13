@@ -2,8 +2,8 @@ import React from 'react';
 
 
 const defaultGame = {
-  namespace: 'none',
-  players: [],
+  room: '',
+  users: [],
   pot: 0,
   maxBet: 0,
   flop: {card1: 'ace', card2: 'ace', card3: 'ace',},
