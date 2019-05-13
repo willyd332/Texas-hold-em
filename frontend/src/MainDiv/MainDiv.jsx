@@ -19,34 +19,48 @@ function HelloWorld(props){
   const [currUser,setUser] = useState()
   const socketContext  = useContext(SocketContext)
 
+
   const thisUser = currGame.users.filter((user) => {
     return user.socketId === socketContext.socket.id
   })
 
-  console.log(thisUser)
-
   useEffect(() => {
-    createListeners();
+    setLiseners();
     setUser(thisUser[0])
   }, [currGame])
 
-  const createListeners = () => {
+  const setLiseners = () => {
 
     socketContext.socket.on('renderGame', (game)=>{
       setCurrGame(game);
       socketContext.socket.off('joinedGame')
-    })
+    });
+  }
 
 
-    socketContext.socket.on('gameStart', () => {
-      if (currGame.users.length > 1){
-        console.log('game will start')
-      }
-    })
+
+  const flop = async () => {
+    const deck = await fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+
 
   }
 
-  console.log(currUser)
+
+  const startGame = () => {
+    console.log('game is starting')
+    const newUsers = currGame.users.map((user) => {
+      user.status = true;
+      return user;
+    })
+    console.log(newUsers)
+    console.log(currGame)
+    setCurrGame({...currGame, users: newUsers, status: true});
+    console.log(currGame)
+    socketContext.socket.emit('updateGame', currGame);
+    flop();
+  }
+
+
 
   return(
     <Container fluid={true}>
@@ -72,7 +86,7 @@ function HelloWorld(props){
         </Row>
         <Row>
           <Col xs="2"><CardsBox/></Col>
-          <Col xs="5"><UserInfo/></Col>
+          <Col xs="5"><UserInfo startGame={startGame} /></Col>
           <Col xs="5"><ChatBox/></Col>
         </Row>
       </GameContext.Provider>

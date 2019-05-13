@@ -21,13 +21,12 @@ function App() {
 
   const sendUsername = () => {
     if(user){
-      console.log(socket)
     socket.emit('userJoined', user);
   }
   }
 
   socket.on('connected', (id)=>{
-    console.log(id)
+    console.log(id + " has connected")
     socket.off('connected')
   });
 
@@ -36,7 +35,7 @@ function App() {
     socket.off('room')
   });
 
-  console.log(room, user)
+  console.log(room + " is the current room")
 
   return (
     <div className="App">

@@ -8,7 +8,6 @@ function PlayerBox(props){
 
   const game = useContext(GameContext)
 
-
   let playerClass = "player-box"
   if (props.middle === "true"){
     playerClass = "player-box-tall"
@@ -17,8 +16,13 @@ function PlayerBox(props){
   return(
     <div className={playerClass}>
       { game.game.users[props.player] &&
-        <div className={game.game.users[props.player] === game.user &&
+        <div className={game.game.users[props.player] === game.user ?
           "currentUser"
+        :
+          game.game.users[props.player].status ?
+            "playingUser"
+          :
+          null
         }>
           <p><strong>{game.game.users[props.player].name}</strong></p>
           <p>${game.game.users[props.player].money}</p>

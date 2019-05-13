@@ -51,6 +51,12 @@ class Game {
   constructor(room, firstUser) {
     this.room = room;
     this.users = [firstUser]
+    this.pot = 0;
+    this.maxBet = 0;
+    this.flop = {card1: 'ace', card2: 'ace', card3: 'ace',};
+    this.river = {card1: 'king'};
+    this.turn = {card1: 'king'};
+    this.status = false;
   }
 }
 class User {
@@ -62,7 +68,7 @@ class User {
     this.bettingRoundStatus = '';
     this.betAmount = null;
     this.cardValue = null;
-    this.playing = false;
+    this.status = false;
   }
 }
 
@@ -119,10 +125,18 @@ io.on("connection", (socket) => {
     console.log(room)
     socket.emit('room', room);
     const game = findGame(room);
-    console.log(game);
     io.to(room).emit('renderGame', game);
     io.to(room).emit('gameStart')
   })
+
+  socket.on('updateGame', (game) => {
+
+    currGames[game.room.length - 1] = game;
+
+    io.to(game.room).emit('renderGame', currGames[game.room.length - 1]);
+
+    })
+
 
   socket.on("disconnect", () => {
     console.log(socket.id + " disconnected")
