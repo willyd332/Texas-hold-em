@@ -61,6 +61,18 @@ const findUser = (id) => {
 // Then you can have it so the users in that class will send data
 // betwwen only the other users in that class)
 
+class Game{
+  constructor(namespace,firstUser){
+    this.namespace = namespace;
+    this.users = [firstUser]
+  }
+  findUser(id){
+    foundUser = this.users.filter(user=>user.id == id)
+    return foundUser[0]
+  }
+
+}
+
 
 io.on("connection", (socket) => {
 
