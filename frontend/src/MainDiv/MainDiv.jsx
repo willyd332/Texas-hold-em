@@ -25,15 +25,21 @@ function HelloWorld(props){
   })
 
   useEffect(() => {
-    setLiseners();
     setUser(thisUser[0])
   }, [currGame])
+
+  useEffect(() => {
+    setLiseners();
+  },[])
 
   const setLiseners = () => {
 
     socketContext.socket.on('renderGame', (game)=>{
       setCurrGame(game);
-      socketContext.socket.off('joinedGame')
+      socketContext.socket.off('renderGame')
+      if (!currGame.status){
+        socketContext.socket.emit('startTheGame', game.room)
+      }
     });
   }
 
@@ -52,11 +58,7 @@ function HelloWorld(props){
       user.status = true;
       return user;
     })
-    console.log(newUsers)
-    console.log(currGame)
     setCurrGame({...currGame, users: newUsers, status: true});
-    console.log(currGame)
-    socketContext.socket.emit('updateGame', currGame);
     flop();
   }
 

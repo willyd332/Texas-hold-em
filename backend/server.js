@@ -126,8 +126,11 @@ io.on("connection", (socket) => {
     socket.emit('room', room);
     const game = findGame(room);
     io.to(room).emit('renderGame', game);
-    io.to(room).emit('gameStart')
   })
+
+  socket.on('startTheGame', (room) => {
+    io.to(room).emit('gameStart')
+    })
 
   socket.on('updateGame', (game) => {
 

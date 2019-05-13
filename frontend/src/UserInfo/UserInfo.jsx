@@ -9,9 +9,10 @@ function UserInfo(props){
   const socketContext  = useContext(SocketContext)
 
 
-  console.log(game.game.status)
+
 
     socketContext.socket.on('gameStart', () => {
+        console.log(game.game.status)
       if (game.game.users.length > 1 && !game.game.status){
         props.startGame()
       }
