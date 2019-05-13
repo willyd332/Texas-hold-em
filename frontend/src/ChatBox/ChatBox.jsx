@@ -1,25 +1,23 @@
-import React, { Component, useState, useEffect } from 'react';
-import {socket, SocketContext} from '../SocketContext/SocketContext.jsx'
+import React, {useContext, useState, useEffect} from 'react';
+import {SocketContext} from '../SocketContext/SocketContext.jsx'
 
 // Components
 import ChatView from '../ChatView/ChatView.jsx';
 
 function ChatBox(props) {
 
-  const [messageList,setMessageList] = useState([]);
-  const [currMessage,setCurrMessage] = useState('');
+  const [messageList, setMessageList] = useState([]);
+  const [currMessage, setCurrMessage] = useState('');
+  const socketContext = useContext(SocketContext)
 
-  useEffect(()=>{
+  useEffect(() => {
     listenForMessage();
-    console.log(SocketContext._currentValue)
-  },[messageList])
-
-
+  }, [messageList])
 
   const listenForMessage = () => {
-    SocketContext._currentValue.on('newMessage', (message) => {
+    socketContext.socket.on('newMessage', (message) => {
       setMessageList(messageList.concat([message]));
-      SocketContext._currentValue.off('newMessage');
+      socketContext.socket.off('newMessage');
     });
   }
 
@@ -28,19 +26,20 @@ function ChatBox(props) {
   }
   const handleSubmit = (e) => {
     e.preventDefault()
-    SocketContext._currentValue.emit('message', currMessage);
+    socketContext.socket.emit('message', {
+      message: currMessage,
+      room: socketContext.room,
+      user: socketContext.user
+    });
     setCurrMessage('');
   }
 
-  return (
-    <div className="chat-box">
-      <ChatView messages={messageList}/>
-      <form onSubmit={handleSubmit}>
-        <input className="messageInput" placeholder="Write Something" onChange={handleChange} value={currMessage}></input>
-      </form>
-    </div>
-  )
+  return (<div className="chat-box">
+    <ChatView messages={messageList}/>
+    <form onSubmit={handleSubmit}>
+      <input className="messageInput" placeholder="Write Something" onChange={handleChange} value={currMessage}></input>
+    </form>
+  </div>)
 }
-
 
 export default ChatBox;

@@ -13,15 +13,15 @@ import {socket, SocketContext} from './SocketContext/SocketContext.jsx'
 function App() {
 
   const [user,setUser] = React.useState(false)
-  const [namespaceSocket,setNamespaceSocket] = React.useState(false)
+  const [room,setRoom] = React.useState('')
 
   React.useEffect(()=>{
     sendUsername()
-    getNamespaceSocket();
   },[user])
 
   const sendUsername = () => {
     if(user){
+      console.log(socket)
     socket.emit('userJoined', user);
   }
   }
@@ -29,31 +29,25 @@ function App() {
   socket.on('connected', (id)=>{
     console.log(id)
     socket.off('connected')
-  })
+  });
 
-  const getNamespaceSocket = async () => {
-    let namespace = await fetch('http://localhost:9000/namespace', {
-      credentials: 'include',
-    })
-    namespace = await namespace.json()
-    console.log(namespace)
+  socket.on('room', (room)=>{
+    setRoom(room);
+    socket.off('room')
+  });
 
-    const newSocket = await openSocket(`http://localhost:9000${namespace}`)
-    console.log(newSocket)
-
-    setNamespaceSocket(newSocket)
-  }
+  console.log(room, user)
 
   return (
     <div className="App">
       {/* for animation perhaps <canvas className="background"></canvas> */}
-      <SocketContext.Provider value={namespaceSocket}>
-        {user ?
+      {user ?
+        <SocketContext.Provider value={{socket: socket, room: room, user: user}}>
           <MainDiv/>
-        :
-        <HomeDiv setUser={setUser}/>
+        </SocketContext.Provider>
+      :
+      <HomeDiv setUser={setUser}/>
         }
-      </SocketContext.Provider>
     </div>
   );
 }
