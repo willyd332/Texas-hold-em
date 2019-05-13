@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
-import {socket} from '../SocketContext/SocketContext.jsx'
+import {socket, SocketContext} from '../SocketContext/SocketContext.jsx'
 
 // Components
 import ChatView from '../ChatView/ChatView.jsx';
@@ -11,12 +11,15 @@ function ChatBox(props) {
 
   useEffect(()=>{
     listenForMessage();
+    console.log(SocketContext._currentValue)
   },[messageList])
 
+
+
   const listenForMessage = () => {
-    socket.on('newMessage', (message) => {
+    SocketContext._currentValue.on('newMessage', (message) => {
       setMessageList(messageList.concat([message]));
-      socket.off('newMessage');
+      SocketContext._currentValue.off('newMessage');
     });
   }
 
@@ -25,7 +28,7 @@ function ChatBox(props) {
   }
   const handleSubmit = (e) => {
     e.preventDefault()
-    socket.emit('message', currMessage);
+    SocketContext._currentValue.emit('message', currMessage);
     setCurrMessage('');
   }
 

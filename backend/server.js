@@ -10,6 +10,13 @@ const authController = require('./controllers/authController');
 require('dotenv').config()
 require('./db/db');
 
+const corsOptions = {
+  origin: process.env.Front_End_URL,
+  credentials: true,
+  optionsSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions))
 
 app.use(session({
   secret: process.env.sessionSecret,
@@ -26,13 +33,7 @@ app.get('/', (req,res) => {
   res.send('Hello World')
   })
 
-const corsOptions = {
-  origin: process.env.Front_End_URL,
-  credentials: true,
-  optionsSuccessStatus: 200,
-}
 
-app.use(cors(corsOptions))
 
 const server = app.listen(process.env.PORT || 9000, ()=>{
     console.log("SERVER IS RUNNING")
@@ -70,8 +71,13 @@ class Game{
     foundUser = this.users.filter(user=>user.id == id)
     return foundUser[0]
   }
-
 }
+
+const allGames = []
+
+app.get('/namespace', (req,res) => {
+  res.json('this would be a namespace')
+  })
 
 
 io.on("connection", (socket) => {
