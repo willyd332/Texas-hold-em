@@ -16,7 +16,7 @@ import { SocketContext } from '../App.jsx'
 function MainDiv(props){
 
   const [game,setGame] = useState(false);
-  const [turn,setTurn] = useState(0)
+  const [turn,setTurn] = useState(0);
 
   const io = useContext(SocketContext);
 
@@ -26,10 +26,13 @@ function MainDiv(props){
 
 const renderGame = () => {
 
-  io.socket.on('renderGame', (foundGame) => {
-    setGame(foundGame);
-    console.log(foundGame)
-    if (foundGame.users.length === 2 && !foundGame.round) {
+  io.socket.on('renderGame', (data) => {
+    if (data.action === 'ante') {
+      const nextTurn = turn + 1;
+      setTurn(nextTurn);
+    }
+    setGame(data.game);
+    if (data.game.users.length === 2 && !data.game.round) {
       startGame();
     }
   });
@@ -50,21 +53,21 @@ const renderGame = () => {
     <Container fluid={true}>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={0}/></Col>
-        <Col xs="4"><PlayerBox game={game} setGame={setGame} playerNum={1}/></Col>
-        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={2}/></Col>
+        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={0}/></Col>
+        <Col xs="4"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={1}/></Col>
+        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={2}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>
-        <Col xs="2"><PlayerBox game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
+        <Col xs="2"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
         <Col xs="8">Game Table</Col>
-        <Col xs="2"><PlayerBox game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
+        <Col xs="2"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
       </Row>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={5}/></Col>
-        <Col xs="4"><PlayerBox game={game} setGame={setGame} playerNum={6}/></Col>
-        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={7}/></Col>
+        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={5}/></Col>
+        <Col xs="4"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={6}/></Col>
+        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={7}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>

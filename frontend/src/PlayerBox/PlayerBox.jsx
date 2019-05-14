@@ -23,6 +23,8 @@ function PlayerBox(props){
 
   const io      = useContext(SocketContext);
   const game    = props.game;
+  const turn    = props.turn;
+  const setTurn    = props.setTurn;
   const setGame = props.setGame;
   let   player;
   if (game.users[props.playerNum]) {
@@ -38,28 +40,44 @@ function PlayerBox(props){
   if (player.socketId === io.socket.id){
     playerClass += " currentUser"
   }
+  if (player.status){
+    playerClass += " playing"
+  } else if (game.round) {
+    playerClass += " sittingOut"
+  }
+
+  const ante = (ante) => {
+    console.log('anteeeeeeeeeeeeeeeeeeeeeeeeee')
+    io.socket.emit('ante', {room: io.room, index: props.playerNum, ante: ante,})
+  };
+
+
+  console.log(game.round + ' ' + props.playerNum + ' ' + turn )
 
   return(
     <div className={playerClass}>
       <p><strong>{player.name}</strong></p>
       <p><strong>${player.money}</strong></p>
-      {game.round === 'ante' ? (
-        <h4>ante</h4>
+      {game.round === 'ante' && turn === props.playerNum ? (
+        <div>
+          <button onClick={(e) => ante(e.target.value)} value={true} >Ante</button>
+          <button onClick={(e) => ante(e.target.value)}>Dont Ante</button>
+        </div>
       )
       : game.round === 'bet' ? (
-        <h4>bet</h4>
+        <p>bet</p>
       )
       : game.round === 'flop' ? (
-        <h4>flop</h4>
+        <p>flop</p>
       )
       : game.round === 'river' ? (
-        <h4>river</h4>
+        <p>river</p>
       )
       : game.round === 'turn' ? (
-        <h4>turn</h4>
+        <p>turn</p>
       )
       : game.round === 'show' ? (
-        <h4>show</h4>
+        <p>show</p>
       ):(
         <h5>Wait For Players</h5>
       )}

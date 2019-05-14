@@ -123,9 +123,9 @@ io.on("connection", (socket) => {
 
 
 // RENDER FUNCTION FOR GAME ROOM
-  const renderRoom = (room) => {
+  const renderRoom = (room,action) => {
     const game = currGames[findGame(room)];
-    io.to(room).emit('renderGame', game);
+    io.to(room).emit('renderGame', {game:game,action:action,});
   }
 
 
@@ -167,6 +167,22 @@ io.on("connection", (socket) => {
     currGames[gameIndex] = updatedGame;
     renderRoom(room);
     })
+
+
+
+// PLAYER SUBMITS ANTE DECISION
+  socket.on('ante', (data) => {
+    const gameIndex = findGame(data.room);
+    const updatedGame = currGames[gameIndex];
+    if (data.ante){
+    updatedGame.users[data.index].status = true;
+    updatedGame.users[data.index].money -= 100;
+    updatedGame.pot += 100;
+    }
+    currGames[gameIndex] = updatedGame;
+    renderRoom(data.room, 'ante');
+    })
+
 
 
 
