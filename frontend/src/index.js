@@ -5,10 +5,15 @@ import {App} from './App.jsx';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import openSocket from 'socket.io-client'
+
+
+const socket = openSocket('http://localhost:9000');
+
 
 ReactDOM.render(
   <BrowserRouter>
-  <App />
+  <App socket={socket}/>
   </BrowserRouter>
   , document.getElementById('root'));
 
