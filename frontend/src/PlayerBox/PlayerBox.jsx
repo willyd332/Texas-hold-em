@@ -31,7 +31,6 @@ function PlayerBox(props){
         player  = defaultPlayer;
   }
 
-
   let playerClass = "player-box"
   if (props.middle === "true"){
     playerClass = "player-box-tall"
@@ -40,21 +39,30 @@ function PlayerBox(props){
     playerClass += " currentUser"
   }
 
-  console.log(player)
-
   return(
     <div className={playerClass}>
       <p><strong>{player.name}</strong></p>
       <p><strong>${player.money}</strong></p>
-      {game.round === 'draw' ? (
-        <h4>Draw</h4>
+      {game.round === 'ante' ? (
+        <h4>ante</h4>
       )
       : game.round === 'bet' ? (
-        <h4>Draw</h4>
-      ) : (
-        <h3>Wait For Players</h3>
+        <h4>bet</h4>
       )
-        }
+      : game.round === 'flop' ? (
+        <h4>flop</h4>
+      )
+      : game.round === 'river' ? (
+        <h4>river</h4>
+      )
+      : game.round === 'turn' ? (
+        <h4>turn</h4>
+      )
+      : game.round === 'show' ? (
+        <h4>show</h4>
+      ):(
+        <h5>Wait For Players</h5>
+      )}
     </div>
   );
 }

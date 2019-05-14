@@ -12,7 +12,7 @@ function ChatView(props){
     if (message.user === io.user){
     return <span key={index} className='message' ><strong>{message.user}<span className="blueArrow"> ></span></strong> {message.message}<br/></span>
     } else {
-    return <span key={index} className='message' ><strong>{message.user}></strong> {message.message}<br/></span>
+    return <span key={index} className='message' ><strong>{message.user} ></strong> {message.message}<br/></span>
   };
 });
 

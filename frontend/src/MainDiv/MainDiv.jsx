@@ -21,19 +21,27 @@ function MainDiv(props){
   const io = useContext(SocketContext);
 
   useEffect(() => {
-    io.socket.on('renderGame', (foundGame) => {
-      setGame(foundGame);
-      if (foundGame.users.length === 1){
-        startGame();
-      }
-    });
-    io.socket.emit('joinGame', io.room);
+    renderGame();
   }, [])
 
+const renderGame = () => {
 
-  const startGame = () => {
-    // setGame()
-    console.log('starting the game')
+  io.socket.on('renderGame', (foundGame) => {
+    setGame(foundGame);
+    console.log(foundGame)
+    if (foundGame.users.length === 2 && !foundGame.round) {
+      startGame();
+    }
+  });
+
+  if (!game) {
+    io.socket.emit('joinGame', io.room);
+  };
+}
+
+
+  const startGame = async () => {
+    io.socket.emit('startGame', io.room);
   }
 
 

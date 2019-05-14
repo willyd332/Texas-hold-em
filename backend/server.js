@@ -47,15 +47,24 @@ const server = app.listen(process.env.PORT || 9000, () => {
 
 const io = socketIo(server);
 
+
 class Game {
   constructor(room, firstUser) {
     this.room = room;
     this.users = [firstUser]
     this.pot = 0;
     this.maxBet = 0;
-    this.flop = {card1: 'ace', card2: 'ace', card3: 'ace',};
-    this.river = {card1: 'king'};
-    this.turn = {card1: 'king'};
+    this.flop = {
+      card1: null,
+      card2: null,
+      card3: null,
+    };
+    this.river = {
+      card1: null
+    };
+    this.turn = {
+      card1: null
+    };
     this.round = null;
   }
 }
@@ -63,7 +72,10 @@ class User {
   constructor(socket, name) {
     this.socketId = socket.id;
     this.name = name;
-    this.hand = {card1: 'Ace', card2: 'Ace',};
+    this.hand = {
+      card1: 'Ace',
+      card2: 'Ace',
+    };
     this.money = 10000;
     this.bettingRoundStatus = '';
     this.betAmount = null;
@@ -71,6 +83,7 @@ class User {
     this.status = false;
   }
 }
+
 
 const currGames = []
 
@@ -80,33 +93,63 @@ const joinGame = (newUser) => {
     if (game.users.length < 8 && !room) {
       console.log('joining')
       room = game.room;
-      console.log(game)
       game.users.push(newUser)
-    }
+    };
   });
   if (!room) {
-    console.log('creating')
-    let x = 'x'
-    x = x.repeat(currGames.length + 1)
-    currGames.push(new Game(x, newUser))
-    room = x
-  }
-  console.log(currGames)
+    console.log('creating');
+    let x = 'x';
+    if (currGames[0]) {
+      x += currGames[currGames.length - 1].room;
+  };
+  currGames.push(new Game(x, newUser));
+  room = x;
+};
   return (room)
 }
 
 const findGame = (room) => {
-  const foundGame = currGames.filter(game => game.room === room);
-  return foundGame[0];
+  for(let i = 0; i < currGames.length; i++){
+    if (currGames[i].room === room) {
+      return i
+    }
+    }
 }
 
+  // USER CONNECTS
 io.on("connection", (socket) => {
 
+
+
+
+// RENDER FUNCTION FOR GAME ROOM
   const renderRoom = (room) => {
-    const game = findGame(room);
+    const game = currGames[findGame(room)];
     io.to(room).emit('renderGame', game);
   }
 
+
+
+
+// USER ENTERS THEIR USERNAME
+  socket.on('userJoined', (username) => {
+    const room = joinGame(new User(socket, username));
+    socket.join(room)
+    socket.emit('room', {room: room, username: username,});
+  });
+
+
+
+
+// USER ENTERS A GAME
+  socket.on('joinGame', (room)=>{
+    console.log(room)
+    renderRoom(room);
+    })
+
+
+
+// USER SENDS A MESSAGE IN CHAT
   socket.on('message', (messageData) => {
     io.to(messageData.room).emit('newMessage', {
       message: messageData.message,
@@ -114,31 +157,38 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on('userJoined', (username) => {
-    const room = joinGame(new User(socket, username));
-    socket.join(room)
-    socket.emit('room', {room: room, username: username,});
-  });
 
-  socket.on('joinGame', (room)=>{
+
+// GAME STARTS WHEN TWO USERS JOIN
+  socket.on('startGame', (room) => {
+    const gameIndex = findGame(room);
+    const updatedGame = currGames[gameIndex];
+    updatedGame.round = 'ante';
+    currGames[gameIndex] = updatedGame;
     renderRoom(room);
     })
 
 
+
+
+// USER DISCONNECTS
   socket.on("disconnect", () => {
-    console.log(socket.id + " disconnected")
-    let thisGame;
-    currGames.forEach((game) => {
-      game.users.forEach((user, index) => {
-        if (user.socketId === socket.id) {
-          game.users.splice(index, 1);
-          thisGame = game;
+    for(let i = 0; i < currGames.length; i++){
+      if(currGames[i]){
+      for(let x = 0; x < currGames[i].users.length; x++){
+        if(currGames[i].users[x]){
+          console.log(currGames[i].users[x])
+          if(currGames[i].users[x].socketId === socket.id){
+            currGames[i].users.splice(x,1);
+            renderRoom(currGames[i].room)
+            if(currGames[i].users.length === 0){
+              currGames.splice(i,1); break;
+            };
+          };
         };
-      });
-    });
-    if (thisGame){
-    io.to(thisGame.room).emit('renderGame', thisGame);
-  }
+      };
+    };
+    };
   });
 
 
