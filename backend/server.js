@@ -5,7 +5,7 @@ const cors = require('cors');
 const session = require('express-session')
 const socketIo = require("socket.io");
 const authController = require('./controllers/authController');
-
+const axios = require('axios')
 
 require('dotenv').config()
 require('./db/db');
@@ -42,7 +42,7 @@ const server = app.listen(process.env.PORT || 9000, () => {
 })
 
 
-// SOCKET.IO STUFF -------
+// SOCKET.IO STUFF -----------------------------------------
 
 
 const io = socketIo(server);
@@ -50,6 +50,7 @@ const io = socketIo(server);
 
 class Game {
   constructor(room, firstUser) {
+    this.deckId = '';
     this.room = room;
     this.users = [firstUser];
     this.turnNumber = 0;
@@ -161,11 +162,23 @@ io.on("connection", (socket) => {
 
 // GAME STARTS WHEN TWO USERS JOIN
   socket.on('startGame', (room) => {
+
+  const startGame = (deck) => {
     const gameIndex = findGame(room);
     const updatedGame = currGames[gameIndex];
     updatedGame.round = 'ante';
+    updatedGame.deckId = deck.deck_id;
     currGames[gameIndex] = updatedGame;
+    console.log(currGames[gameIndex])
     renderRoom(room);
+    }
+
+    axios.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+    .then((res) => startGame(res))
+    .catch(function(error){
+      console.log(error);
+      });
+
     })
 
 // PLAYER SUBMITS ANTE DECISION
@@ -195,8 +208,10 @@ io.on("connection", (socket) => {
     const gameIndex = findGame(data.room);
     const updatedGame = currGames[gameIndex];
 
-    updatedGame.users[data.index].money -= data.bet;
-    updatedGame.pot += data.bet;
+    const betAmount = parseInt(data.bet);
+
+    updatedGame.users[data.index].money -= betAmount;
+    updatedGame.pot += betAmount;
 
     // if the next player exists
     if (updatedGame.turnNumber < updatedGame.users.length - 1) {
@@ -218,9 +233,9 @@ io.on("connection", (socket) => {
           console.log("last player was false, changing round")
 
           updatedGame.turnNumber = 0;
-          updatedGame.round = 'test'; // this must be changed
+          updatedGame.round = 'draw'; // this must be changed to DRAW?
           currGames[gameIndex] = updatedGame;
-          renderRoom(data.room, 'test');
+          renderRoom(data.room, 'draw');
         };
       };
       // Turn has been correctly updated
@@ -232,9 +247,9 @@ io.on("connection", (socket) => {
     console.log("Round Has Ended")
 
     updatedGame.turnNumber = 0;
-    updatedGame.round = 'test'; // this must be changed
+    updatedGame.round = 'draw'; // this must be changed to DRAW?
     currGames[gameIndex] = updatedGame;
-    renderRoom(data.room, 'test');
+    renderRoom(data.room, 'draw');
   };
   });
 

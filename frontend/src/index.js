@@ -9,6 +9,8 @@ import openSocket from 'socket.io-client'
 
 
 const socket = openSocket('http://localhost:9000');
+// const socket = openSocket('http://100.70.16.169:9000');
+
 
 
 ReactDOM.render(

@@ -5,6 +5,7 @@ import PlayerBox from '../PlayerBox/PlayerBox.jsx'
 import CardsBox from '../CardsBox/CardsBox.jsx'
 import UserInfo from '../UserInfo/UserInfo.jsx'
 import ChatBox from '../ChatBox/ChatBox.jsx'
+import GameTable from '../GameTable/GameTable.jsx'
 
 // Bootstrap
 import { Container, Row, Col } from 'reactstrap';
@@ -43,6 +44,7 @@ function MainDiv(props){
 
 // START THE GAME (SETS ROUND TO ANTE)
   const startGame = async () => {
+
     io.socket.emit('startGame', io.room);
   }
 
@@ -59,7 +61,7 @@ function MainDiv(props){
       </Row>
       <Row>
         <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
-        <Col xs="8">Game Table</Col>
+        <Col xs="8"><GameTable  game={game} /></Col>
         <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
       </Row>
       <Row>
