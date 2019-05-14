@@ -74,10 +74,7 @@ class User {
   constructor(socket, name) {
     this.socketId = socket.id;
     this.name = name;
-    this.hand = {
-      card1: 'Ace',
-      card2: 'Ace',
-    };
+    this.hand = [{},{}]
     this.money = 10000;
     this.bettingRoundStatus = '';
     this.betAmount = null;
@@ -167,9 +164,9 @@ io.on("connection", (socket) => {
     const gameIndex = findGame(room);
     const updatedGame = currGames[gameIndex];
     updatedGame.round = 'ante';
-    updatedGame.deckId = deck.deck_id;
+    updatedGame.deckId = deck.data.deck_id;
+    console.log(updatedGame.deckId)
     currGames[gameIndex] = updatedGame;
-    console.log(currGames[gameIndex])
     renderRoom(room);
     }
 
@@ -192,15 +189,33 @@ io.on("connection", (socket) => {
       }
       if (updatedGame.turnNumber < updatedGame.users.length - 1) {
         updatedGame.turnNumber += 1;
-        currGames[gameIndex] = updatedGame;
-        renderRoom(data.room, 'ante');
+        axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
+        .then(function(res){
+          console.log(res.data.cards)
+          updatedGame.users[data.index].hand = res.data.cards
+          currGames[gameIndex] = updatedGame;
+          console.log(updatedGame.users[data.index].hand)
+          renderRoom(data.room, 'ante')
+          })
+          .catch(function (error) {
+            console.log(error);
+            });
       } else {
         updatedGame.turnNumber = 0;
         updatedGame.round = 'bet';
-        currGames[gameIndex] = updatedGame;
-        renderRoom(data.room, 'bet');
+        axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
+        .then(function(res){
+          updatedGame.users[data.index].hand = res.data.cards
+          currGames[gameIndex] = updatedGame;
+          console.log(updatedGame.users[data.index].hand)
+          renderRoom(data.room, 'bet')
+          })
+        .catch(function (error) {
+          console.log(error);
+          });
       }
     });
+
 
 
 // PLAYER SUBMITS BET
@@ -233,23 +248,23 @@ io.on("connection", (socket) => {
           console.log("last player was false, changing round")
 
           updatedGame.turnNumber = 0;
-          updatedGame.round = 'draw'; // this must be changed to DRAW?
+          updatedGame.round = 'flop'; // this must be changed to DRAW?
           currGames[gameIndex] = updatedGame;
-          renderRoom(data.room, 'draw');
+          renderRoom(data.room, 'flop');
         };
       };
       // Turn has been correctly updated
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;
-      renderRoom(data.room, 'ante');
+      renderRoom(data.room, 'bet');
   } else {
 
     console.log("Round Has Ended")
 
     updatedGame.turnNumber = 0;
-    updatedGame.round = 'draw'; // this must be changed to DRAW?
+    updatedGame.round = 'flop'; // this must be changed to DRAW?
     currGames[gameIndex] = updatedGame;
-    renderRoom(data.room, 'draw');
+    renderRoom(data.room, 'flop');
   };
   });
 
