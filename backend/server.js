@@ -51,7 +51,8 @@ const io = socketIo(server);
 class Game {
   constructor(room, firstUser) {
     this.room = room;
-    this.users = [firstUser]
+    this.users = [firstUser];
+    this.turnNumber = 0;
     this.pot = 0;
     this.maxBet = 0;
     this.flop = {
@@ -143,7 +144,6 @@ io.on("connection", (socket) => {
 
 // USER ENTERS A GAME
   socket.on('joinGame', (room)=>{
-    console.log(room)
     renderRoom(room);
     })
 
@@ -168,23 +168,75 @@ io.on("connection", (socket) => {
     renderRoom(room);
     })
 
-
-
 // PLAYER SUBMITS ANTE DECISION
-  socket.on('ante', (data) => {
+    socket.on('ante', (data) => {
+      const gameIndex = findGame(data.room);
+      const updatedGame = currGames[gameIndex];
+      if (data.ante) {
+        updatedGame.users[data.index].status = true;
+        updatedGame.users[data.index].money -= 100;
+        updatedGame.pot += 100;
+      }
+      if (updatedGame.turnNumber < updatedGame.users.length - 1) {
+        updatedGame.turnNumber += 1;
+        currGames[gameIndex] = updatedGame;
+        renderRoom(data.room, 'ante');
+      } else {
+        updatedGame.turnNumber = 0;
+        updatedGame.round = 'bet';
+        currGames[gameIndex] = updatedGame;
+        renderRoom(data.room, 'bet');
+      }
+    });
+
+
+// PLAYER SUBMITS BET
+  socket.on('bet', (data) => {
     const gameIndex = findGame(data.room);
     const updatedGame = currGames[gameIndex];
-    if (data.ante){
-    updatedGame.users[data.index].status = true;
-    updatedGame.users[data.index].money -= 100;
-    updatedGame.pot += 100;
-    }
+
+    updatedGame.users[data.index].money -= data.bet;
+    updatedGame.pot += data.bet;
+
+    // if the next player exists
+    if (updatedGame.turnNumber < updatedGame.users.length - 1) {
+
+      console.log("normal turn increase")
+      updatedGame.turnNumber += 1;
+
+      // if the next (now current) players status is false
+      if (!updatedGame.users[updatedGame.turnNumber].status) {
+        // if the player after the false player exists
+        if (updatedGame.turnNumber < updatedGame.users.length - 1) {
+
+          console.log("Skip Player turn increase")
+          updatedGame.turnNumber += 1;
+
+          // the player after the false player does not exist
+        } else {
+
+          console.log("last player was false, changing round")
+
+          updatedGame.turnNumber = 0;
+          updatedGame.round = 'test'; // this must be changed
+          currGames[gameIndex] = updatedGame;
+          renderRoom(data.room, 'test');
+        };
+      };
+      // Turn has been correctly updated
+      console.log("updating turnNumber to " + updatedGame.turnNumber)
+      currGames[gameIndex] = updatedGame;
+      renderRoom(data.room, 'ante');
+  } else {
+
+    console.log("Round Has Ended")
+
+    updatedGame.turnNumber = 0;
+    updatedGame.round = 'test'; // this must be changed
     currGames[gameIndex] = updatedGame;
-    renderRoom(data.room, 'ante');
-    })
-
-
-
+    renderRoom(data.room, 'test');
+  };
+  });
 
 
 // USER DISCONNECTS
@@ -193,7 +245,6 @@ io.on("connection", (socket) => {
       if(currGames[i]){
       for(let x = 0; x < currGames[i].users.length; x++){
         if(currGames[i].users[x]){
-          console.log(currGames[i].users[x])
           if(currGames[i].users[x].socketId === socket.id){
             currGames[i].users.splice(x,1);
             renderRoom(currGames[i].room)

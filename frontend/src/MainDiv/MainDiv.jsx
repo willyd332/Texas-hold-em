@@ -16,37 +16,32 @@ import { SocketContext } from '../App.jsx'
 function MainDiv(props){
 
   const [game,setGame] = useState(false);
-  const [turn,setTurn] = useState(0);
-
   const io = useContext(SocketContext);
 
   useEffect(() => {
     renderGame();
   }, [])
 
-const renderGame = () => {
 
-  io.socket.on('renderGame', (data) => {
+// RENDER GAME WHENEVER A CHANGE IS MADE
+    const renderGame = () => {
+      io.socket.on('renderGame', (data) => {
 
-    setGame(data.game);
+        setGame(data.game);
 
-    if (data.game.users.length === 2 && !data.game.round) {
-      startGame();
+        if (data.game.users.length === 2 && !data.game.round) {
+          startGame();
+        }
+
+      });
+
+// IF THE USER HAS NO GAME ALREADY, JOIN ONE
+      if (!game) {
+        io.socket.emit('joinGame', io.room);
+      };
     }
 
-    if (data.action === 'ante') {
-      const nextTurn = turn + 1;
-      setTurn(nextTurn);
-    }
-
-  });
-
-  if (!game) {
-    io.socket.emit('joinGame', io.room);
-  };
-}
-
-
+// START THE GAME (SETS ROUND TO ANTE)
   const startGame = async () => {
     io.socket.emit('startGame', io.room);
   }
@@ -57,21 +52,21 @@ const renderGame = () => {
     <Container fluid={true}>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={0}/></Col>
-        <Col xs="4"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={1}/></Col>
-        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={2}/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={0}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={1}/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={2}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>
-        <Col xs="2"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
+        <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
         <Col xs="8">Game Table</Col>
-        <Col xs="2"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
+        <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
       </Row>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={5}/></Col>
-        <Col xs="4"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={6}/></Col>
-        <Col xs="3"><PlayerBox turn={turn} setTurn={setTurn} game={game} setGame={setGame} playerNum={7}/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={5}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={6}/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={7}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>
