@@ -72,7 +72,7 @@ function MainDiv(props){
       </Row>
       <Row>
         <Col xs="2"><CardsBox game={game} /></Col>
-        <Col xs="5"><UserInfo /></Col>
+        <Col xs="5"><UserInfo game={game} setGame={setGame} playerNum={5} /></Col>
         <Col xs="5"><ChatBox/></Col>
       </Row>
     </Container>

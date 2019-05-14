@@ -73,3 +73,19 @@ div {
 .blueArrow {
   color: blue;
 }
+.card-in-hand{
+  height: 132px;
+  width: 93px;
+  display: inline-block;
+}
+.card-back{
+  height: 44px;
+  width: 31px;
+  display: inline-block;
+  position: relative;
+}
+.player-info{
+  display: inline-block;
+  margin: 3px;
+  
+}

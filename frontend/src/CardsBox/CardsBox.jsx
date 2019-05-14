@@ -28,8 +28,6 @@ function CardsBox(props){
     return user.socketId === io.socket.id;
   })
 
-  console.log(user[0])
-
   return(
     <div className="cards-box">
       <CardInHand card={user[0].hand[0]} ></CardInHand>

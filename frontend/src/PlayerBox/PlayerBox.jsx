@@ -22,9 +22,6 @@ const defaultPlayer = {
 
 function PlayerBox(props){
 
-// STATE
-const [currBet,setCurrBet] = useState(0)
-
 // DEFINING VARIABLES FOR EASE
   const io      = useContext(SocketContext);
   const game    = props.game;
@@ -50,60 +47,18 @@ const [currBet,setCurrBet] = useState(0)
     playerClass += " sittingOut"
   }
 
-// HANDLES THE ANTE DECISION (EMITS ANTE)
-  const handleAnte = (ante) => {
-    console.log('anteeeeeeeeeeeeeeeeeeeeeeeeee')
-    io.socket.emit('ante', {
-      room: io.room,
-      index: props.playerNum,
-      ante: ante,
-    });
-  };
-
-
-  const handleBet = (e) => {
-    e.preventDefault()
-    console.log('BETTTTTIIINNNGGG')
-    io.socket.emit('bet', {
-      room: io.room,
-      index: props.playerNum,
-      bet: currBet,
-    });
-  };
-
 
   console.log(game.round + ' ' + props.playerNum + ' ' + game.turnNumber )
 
   return(
     <div className={playerClass}>
-      <p><strong>{player.name}</strong></p>
-      <p><strong>${player.money}</strong></p>
-      {game.round === 'ante' && game.turnNumber === props.playerNum && game.users[game.turnNumber].socketId === io.socket.id ? (
-        <div>
-          <button onClick={(e) => handleAnte(e.target.value)} value={true} >Ante</button>
-          <button onClick={(e) => handleAnte(e.target.value)}>Dont Ante</button>
-        </div>
-      )
-      : game.round === 'bet' && game.turnNumber === props.playerNum && game.users[game.turnNumber].socketId === io.socket.id ? (
-        <form onSubmit={(e)=>handleBet(e)}>
-          <input type="number" onChange={(e)=>setCurrBet(e.target.value)} value={currBet}></input>
-          <input type="submit"></input>
-        </form>
-      )
-      : game.round === 'flop' ? (
-        <p>flop</p>
-      )
-      : game.round === 'river' ? (
-        <p>river</p>
-      )
-      : game.round === 'turn' ? (
-        <p>turn</p>
-      )
-      : game.round === 'show' ? (
-        <p>show</p>
-      ):(
-        <h5>Wait For Players</h5>
-      )}
+
+      <div className="player-display">
+        <p className="player-info"><strong>{player.name}</strong></p>
+        <p className="player-info"><strong>${player.money}</strong></p>
+        {player.status && <div><img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695"></img>
+          <img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695"></img></div>}
+      </div>
     </div>
   );
 }
