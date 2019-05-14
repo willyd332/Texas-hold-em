@@ -27,14 +27,18 @@ function MainDiv(props){
 const renderGame = () => {
 
   io.socket.on('renderGame', (data) => {
+
+    setGame(data.game);
+
+    if (data.game.users.length === 2 && !data.game.round) {
+      startGame();
+    }
+
     if (data.action === 'ante') {
       const nextTurn = turn + 1;
       setTurn(nextTurn);
     }
-    setGame(data.game);
-    if (data.game.users.length === 2 && !data.game.round) {
-      startGame();
-    }
+
   });
 
   if (!game) {
