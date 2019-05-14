@@ -56,7 +56,7 @@ class Game {
     this.flop = {card1: 'ace', card2: 'ace', card3: 'ace',};
     this.river = {card1: 'king'};
     this.turn = {card1: 'king'};
-    this.status = false;
+    this.round = null;
   }
 }
 class User {
@@ -91,28 +91,23 @@ const joinGame = (newUser) => {
     currGames.push(new Game(x, newUser))
     room = x
   }
-  //   if(currGames[0]){
-  //   console.log(currGames[0])
-  // }
   console.log(currGames)
   return (room)
 }
 
 const findGame = (room) => {
-  console.log(currGames)
   const foundGame = currGames.filter(game => game.room === room);
-  console.log(foundGame)
   return foundGame[0];
 }
 
 io.on("connection", (socket) => {
 
-  console.log(socket.id + " has connected");
-
-  socket.emit('connected', socket.id)
+  const renderRoom = (room) => {
+    const game = findGame(room);
+    io.to(room).emit('renderGame', game);
+  }
 
   socket.on('message', (messageData) => {
-    console.log(messageData)
     io.to(messageData.room).emit('newMessage', {
       message: messageData.message,
       user: messageData.user
@@ -122,28 +117,16 @@ io.on("connection", (socket) => {
   socket.on('userJoined', (username) => {
     const room = joinGame(new User(socket, username));
     socket.join(room)
-    console.log(room)
-    socket.emit('room', room);
-    const game = findGame(room);
-    io.to(room).emit('renderGame', game);
-  })
+    socket.emit('room', {room: room, username: username,});
+  });
 
-  socket.on('startTheGame', (room) => {
-    io.to(room).emit('gameStart')
-    })
-
-  socket.on('updateGame', (game) => {
-
-    currGames[game.room.length - 1] = game;
-
-    io.to(game.room).emit('renderGame', currGames[game.room.length - 1]);
-
+  socket.on('joinGame', (room)=>{
+    renderRoom(room);
     })
 
 
   socket.on("disconnect", () => {
     console.log(socket.id + " disconnected")
-
     let thisGame;
     currGames.forEach((game) => {
       game.users.forEach((user, index) => {

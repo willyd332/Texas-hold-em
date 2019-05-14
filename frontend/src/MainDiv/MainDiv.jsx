@@ -10,28 +10,53 @@ import ChatBox from '../ChatBox/ChatBox.jsx'
 import { Container, Row, Col } from 'reactstrap';
 
 
-function HelloWorld(props){
+// Context
+import { SocketContext } from '../App.jsx'
+
+function MainDiv(props){
+
+  const [game,setGame] = useState(false);
+  const [turn,setTurn] = useState(0)
+
+  const io = useContext(SocketContext);
+
+  useEffect(() => {
+    io.socket.on('renderGame', (foundGame) => {
+      setGame(foundGame);
+      if (foundGame.users.length === 1){
+        startGame();
+      }
+    });
+    io.socket.emit('joinGame', io.room);
+  }, [])
 
 
+  const startGame = () => {
+    // setGame()
+    console.log('starting the game')
+  }
+
+
+  if (game){
   return(
     <Container fluid={true}>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox player={0}/></Col>
-        <Col xs="4"><PlayerBox player={1}/></Col>
-        <Col xs="3"><PlayerBox player={2}/></Col>
+        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={0}/></Col>
+        <Col xs="4"><PlayerBox game={game} setGame={setGame} playerNum={1}/></Col>
+        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={2}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>
-        <Col xs="2"><PlayerBox player={3} middle="true"/></Col>
+        <Col xs="2"><PlayerBox game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
         <Col xs="8">Game Table</Col>
-        <Col xs="2"><PlayerBox player={4} middle="true"/></Col>
+        <Col xs="2"><PlayerBox game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
       </Row>
       <Row>
         <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox player={5}/></Col>
-        <Col xs="4"><PlayerBox player={6}/></Col>
-        <Col xs="3"><PlayerBox player={7}/></Col>
+        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={5}/></Col>
+        <Col xs="4"><PlayerBox game={game} setGame={setGame} playerNum={6}/></Col>
+        <Col xs="3"><PlayerBox game={game} setGame={setGame} playerNum={7}/></Col>
         <Col xs="1"></Col>
       </Row>
       <Row>
@@ -41,9 +66,12 @@ function HelloWorld(props){
       </Row>
     </Container>
   );
+} else {
+  return <h1>Please Wait While We Find A Game....</h1>
+};
 }
 
 
 
 
-export default HelloWorld;
+export default MainDiv;

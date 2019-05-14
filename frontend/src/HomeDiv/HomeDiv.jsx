@@ -22,7 +22,7 @@ function HelloWorld(props){
       <Row>
         <form onSubmit={(e)=>{
           e.preventDefault()
-          props.setUser(username)
+          props.createUser(username)
         }}>
           <input onChange={handleChange} value={username} placeholder={username}/>
           <input type="submit" />
