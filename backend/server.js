@@ -6,6 +6,7 @@ const session = require('express-session')
 const socketIo = require("socket.io");
 const authController = require('./controllers/authController');
 const axios = require('axios')
+const Hand = require('pokersolver').Hand;
 
 require('dotenv').config()
 require('./db/db');
@@ -103,13 +104,34 @@ const findGame = (room) => {
   for(let i = 0; i < currGames.length; i++){
     if (currGames[i].room === room) {
       return i
+    };
+  };
+};
+
+
+const findCardValue = (user, game) => {
+
+  const hand = [user.hand[0].code,user.hand[1].code,game.flop[0].code,game.flop[1].code,game.flop[2].code,game.river.code,game.turn.code];
+
+  for (let i = 0; i < hand.length; i++){
+    if (hand[i][0] === '0'){
+      let newString = 'T';
+      newString += hand[i][1];
+      hand[i] = newString;
     }
-    }
-}
+  }
+
+  const solvedHand = Hand.solve(hand);
+
+  return solvedHand;
+
+};
+
+
+
 
   // USER CONNECTS
 io.on("connection", (socket) => {
-
 
 
 
@@ -178,6 +200,55 @@ io.on("connection", (socket) => {
         });
 
   }
+
+
+  const show = (updatedGame) => {
+
+    const gameIndex = findGame(updatedGame.room);
+
+    const solvedHands = [];
+
+    const usersWithScore = updatedGame.users.forEach((user) => {
+         solvedHands.push(findCardValue(user, updatedGame))
+        });
+
+    const winners = Hand.winners(solvedHands);
+
+    let winnerIndex = [];
+    solvedHands.forEach((hand, index) => {
+        winners.forEach((winner) => {
+          if (winner === hand){
+            winnerIndex.push(index);
+          };
+          });
+      });
+
+        winners.forEach((winner) => {
+
+          updatedGame.users[winnerIndex[0]].money += (Math.round(updatedGame.pot/winners.length));
+
+        });
+        updatedGame.pot = 0;
+        updatedGame.round = 'ante';
+        updatedGame.flop = [{},{},{}];
+        updatedGame.river = {};
+        updatedGame.turn = {};
+        updatedGame.maxBet = 0;
+        updatedGame.turnNumber = 0;
+        updatedGame.users = updatedGame.users.map((user)=>{
+          user.hand = [{},{}];
+          user.status = false;
+          return user;
+          });
+        currGames[gameIndex] = updatedGame;
+
+      axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/shuffle/`)
+      .then(renderRoom(updatedGame.room, 'show'))
+      .catch(function(error){
+        console.log(error);
+        });
+  };
+
 
 // DRY MARKER ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ DRY
 
@@ -253,7 +324,6 @@ io.on("connection", (socket) => {
           console.log(res.data.cards)
           updatedGame.users[data.index].hand = res.data.cards
           currGames[gameIndex] = updatedGame;
-          console.log(updatedGame.users[data.index].hand)
           renderRoom(data.room, 'ante')
           })
           .catch(function (error) {
@@ -266,7 +336,6 @@ io.on("connection", (socket) => {
         .then(function(res){
           updatedGame.users[data.index].hand = res.data.cards
           currGames[gameIndex] = updatedGame;
-          console.log(updatedGame.users[data.index].hand)
           renderRoom(data.room, 'bet')
           })
         .catch(function (error) {
@@ -316,7 +385,7 @@ io.on("connection", (socket) => {
           } else if (!updatedGame.turn.value){
             turn(updatedGame);
           } else {
-            console.log("SHOW YOUR CARDS.......TODO")
+            show(updatedGame);
           };
 
         };
@@ -337,7 +406,7 @@ io.on("connection", (socket) => {
     } else if (!updatedGame.turn.value){
       turn(updatedGame);
     } else {
-      console.log("SHOW YOUR CARDS.......TODO")
+      show(updatedGame);
     };
   };
   });
@@ -377,7 +446,7 @@ io.on("connection", (socket) => {
           } else if (!updatedGame.turn.value){
             turn(updatedGame);
           } else {
-            console.log("SHOW YOUR CARDS.......TODO")
+            show(updatedGame);
           };
 
         };
@@ -398,7 +467,7 @@ io.on("connection", (socket) => {
     } else if (!updatedGame.turn.value){
       turn(updatedGame);
     } else {
-      console.log("SHOW YOUR CARDS.......TODO")
+      show(updatedGame);
     };
 
   };
