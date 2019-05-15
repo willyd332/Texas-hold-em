@@ -120,10 +120,10 @@ io.on("connection", (socket) => {
   }
 
 
-// DRAWS CARDS FOR FLOP AND RESTARTS BETTING ROUND
-  const flop = (updatedGame) => {
+// DRY MARKER vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DRY
 
-    console.log(updatedGame)
+// DRAWS CARDS FOR FLOP RIVER AND TURN AND RESTARTS BETTING ROUND
+  const flop = (updatedGame) => {
 
     const gameIndex = findGame(updatedGame.room);
 
@@ -143,11 +143,46 @@ io.on("connection", (socket) => {
 
   const river = (updatedGame) => {
 
+    const gameIndex = findGame(updatedGame.room);
+
+    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
+    .then(function(res){
+      console.log(res.data.cards)
+      updatedGame.river = res.data.cards[0];
+      updatedGame.round = 'bet';
+      updatedGame.maxBet = 0;
+      currGames[gameIndex] = updatedGame;
+      renderRoom(updatedGame.room, 'bet')
+      })
+      .catch(function (error) {
+        console.log(error);
+        });
+
   }
 
   const turn = (updatedGame) => {
 
+    const gameIndex = findGame(updatedGame.room);
+
+    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
+    .then(function(res){
+      console.log(res.data.cards)
+      updatedGame.turn = res.data.cards[0];
+      updatedGame.round = 'bet';
+      updatedGame.maxBet = 0;
+      currGames[gameIndex] = updatedGame;
+      renderRoom(updatedGame.room, 'bet')
+      })
+      .catch(function (error) {
+        console.log(error);
+        });
+
   }
+
+// DRY MARKER ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ DRY
+
+
+
 
 
 // USER ENTERS THEIR USERNAME
@@ -197,6 +232,10 @@ io.on("connection", (socket) => {
       });
 
     })
+
+
+
+// DRY MARKER vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DRY
 
 // PLAYER SUBMITS ANTE DECISION
     socket.on('ante', (data) => {
@@ -289,7 +328,7 @@ io.on("connection", (socket) => {
   } else {
     console.log("Round Has Ended")
     updatedGame.turnNumber = 0;
-    console.log(updatedGame)
+
 
     if(!updatedGame.flop[0].value){
       flop(updatedGame);
@@ -329,7 +368,7 @@ io.on("connection", (socket) => {
         } else {
           console.log("last player was false, changing round")
           updatedGame.turnNumber = 0;
-          console.log(updatedGame)
+
 
           if(!updatedGame.flop[0].value){
             flop(updatedGame);
@@ -350,7 +389,7 @@ io.on("connection", (socket) => {
   } else {
     console.log("Round Has Ended")
     updatedGame.turnNumber = 0;
-    console.log(updatedGame);
+     ;
 
     if(!updatedGame.flop[0].value){
       flop(updatedGame);
@@ -364,6 +403,10 @@ io.on("connection", (socket) => {
 
   };
   });
+
+// DRY MARKER ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ DRY
+
+
 
 
 
