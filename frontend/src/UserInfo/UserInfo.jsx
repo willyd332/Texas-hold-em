@@ -22,7 +22,7 @@ function UserInfo(props){
 
 
   // STATE
-  const [currBet,setCurrBet] = useState(0)
+  const [currBet,setCurrBet] = useState(props.game.maxBet)
 
 
 
@@ -58,13 +58,23 @@ function UserInfo(props){
 
     const handleBet = (e) => {
       e.preventDefault()
-      console.log('BETTTTTIIINNNGGG')
+
+      if (currBet >= game.maxBet && currBet <= player.money){
       io.socket.emit('bet', {
         room: io.room,
         index: playerIndex,
         bet: currBet,
       });
+      setCurrBet(0);
+    }
     };
+
+    const handleFold = () => {
+      io.socket.emit('fold', {
+        room: io.room,
+        index: playerIndex,
+      });
+    }
 
     console.log(game)
 
@@ -81,20 +91,9 @@ function UserInfo(props){
       : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id ? (
         <form onSubmit={(e)=>handleBet(e)}>
           <input type="number" onChange={(e)=>setCurrBet(e.target.value)} value={currBet}></input>
+          <button onClick={handleFold}>Fold</button>
           <input type="submit"></input>
         </form>
-      )
-      : game.round === 'flop' ? (
-        <p>flop</p>
-      )
-      : game.round === 'river' ? (
-        <p>river</p>
-      )
-      : game.round === 'turn' ? (
-        <p>turn</p>
-      )
-      : game.round === 'show' ? (
-        <p>show</p>
       ):(
         <h5>Wait For Players</h5>
       )}

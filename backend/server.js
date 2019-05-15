@@ -56,17 +56,9 @@ class Game {
     this.turnNumber = 0;
     this.pot = 0;
     this.maxBet = 0;
-    this.flop = {
-      card1: null,
-      card2: null,
-      card3: null,
-    };
-    this.river = {
-      card1: null
-    };
-    this.turn = {
-      card1: null
-    };
+    this.flop = [{},{},{}];
+    this.river = {};
+    this.turn =  {};
     this.round = null;
   }
 }
@@ -128,6 +120,34 @@ io.on("connection", (socket) => {
   }
 
 
+// DRAWS CARDS FOR FLOP AND RESTARTS BETTING ROUND
+  const flop = (updatedGame) => {
+
+    console.log(updatedGame)
+
+    const gameIndex = findGame(updatedGame.room);
+
+    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=3`)
+    .then(function(res){
+      console.log(res.data.cards)
+      updatedGame.flop = res.data.cards
+      updatedGame.round = 'bet';
+      updatedGame.maxBet = 0;
+      currGames[gameIndex] = updatedGame;
+      renderRoom(updatedGame.room, 'bet')
+      })
+      .catch(function (error) {
+        console.log(error);
+        });
+  }
+
+  const river = (updatedGame) => {
+
+  }
+
+  const turn = (updatedGame) => {
+
+  }
 
 
 // USER ENTERS THEIR USERNAME
@@ -227,6 +247,9 @@ io.on("connection", (socket) => {
 
     updatedGame.users[data.index].money -= betAmount;
     updatedGame.pot += betAmount;
+    if (betAmount > updatedGame.maxBet){
+      updatedGame.maxBet = betAmount;
+    }
 
     // if the next player exists
     if (updatedGame.turnNumber < updatedGame.users.length - 1) {
@@ -244,13 +267,19 @@ io.on("connection", (socket) => {
 
           // the player after the false player does not exist
         } else {
-
           console.log("last player was false, changing round")
-
           updatedGame.turnNumber = 0;
-          updatedGame.round = 'flop'; // this must be changed to DRAW?
-          currGames[gameIndex] = updatedGame;
-          renderRoom(data.room, 'flop');
+
+          if(!updatedGame.flop[0].value){
+            flop(updatedGame);
+          } else if (!updatedGame.river.value){
+            river(updatedGame);
+          } else if (!updatedGame.turn.value){
+            turn(updatedGame);
+          } else {
+            console.log("SHOW YOUR CARDS.......TODO")
+          };
+
         };
       };
       // Turn has been correctly updated
@@ -258,15 +287,84 @@ io.on("connection", (socket) => {
       currGames[gameIndex] = updatedGame;
       renderRoom(data.room, 'bet');
   } else {
-
     console.log("Round Has Ended")
-
     updatedGame.turnNumber = 0;
-    updatedGame.round = 'flop'; // this must be changed to DRAW?
-    currGames[gameIndex] = updatedGame;
-    renderRoom(data.room, 'flop');
+    console.log(updatedGame)
+
+    if(!updatedGame.flop[0].value){
+      flop(updatedGame);
+    } else if (!updatedGame.river.value){
+      river(updatedGame);
+    } else if (!updatedGame.turn.value){
+      turn(updatedGame);
+    } else {
+      console.log("SHOW YOUR CARDS.......TODO")
+    };
   };
   });
+
+// HANDLES WHEN A USER FOLDS
+
+// PLAYER SUBMITS BET
+  socket.on('fold', (data) => {
+
+    const gameIndex = findGame(data.room);
+    const updatedGame = currGames[gameIndex];
+    updatedGame.users[data.index].status = false;
+    // if the next player exists
+    if (updatedGame.turnNumber < updatedGame.users.length - 1) {
+
+      console.log("normal turn increase")
+      updatedGame.turnNumber += 1;
+
+      // if the next (now current) player's status is false
+      if (!updatedGame.users[updatedGame.turnNumber].status) {
+        // if the player after the false player exists
+        if (updatedGame.turnNumber < updatedGame.users.length - 1) {
+
+          console.log("Skip Player turn increase")
+          updatedGame.turnNumber += 1;
+
+          // the player after the false player does not exist
+        } else {
+          console.log("last player was false, changing round")
+          updatedGame.turnNumber = 0;
+          console.log(updatedGame)
+
+          if(!updatedGame.flop[0].value){
+            flop(updatedGame);
+          } else if (!updatedGame.river.value){
+            river(updatedGame);
+          } else if (!updatedGame.turn.value){
+            turn(updatedGame);
+          } else {
+            console.log("SHOW YOUR CARDS.......TODO")
+          };
+
+        };
+      };
+      // Turn has been correctly updated
+      console.log("updating turnNumber to " + updatedGame.turnNumber)
+      currGames[gameIndex] = updatedGame;
+      renderRoom(data.room, 'bet');
+  } else {
+    console.log("Round Has Ended")
+    updatedGame.turnNumber = 0;
+    console.log(updatedGame);
+
+    if(!updatedGame.flop[0].value){
+      flop(updatedGame);
+    } else if (!updatedGame.river.value){
+      river(updatedGame);
+    } else if (!updatedGame.turn.value){
+      turn(updatedGame);
+    } else {
+      console.log("SHOW YOUR CARDS.......TODO")
+    };
+
+  };
+  });
+
 
 
 // USER DISCONNECTS

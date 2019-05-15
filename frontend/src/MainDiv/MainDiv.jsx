@@ -50,30 +50,30 @@ function MainDiv(props){
 
   if (game){
   return(
-    <Container fluid={true}>
+    <Container className="game-container" fluid={true}>
       <Row>
-        <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={0}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={1}/></Col>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={2}/></Col>
-        <Col xs="1"></Col>
+        <Col md="1"></Col>
+        <Col md="3"><PlayerBox  game={game} setGame={setGame} playerNum={0}/></Col>
+        <Col md="4"><PlayerBox  game={game} setGame={setGame} playerNum={1}/></Col>
+        <Col md="3"><PlayerBox  game={game} setGame={setGame} playerNum={2}/></Col>
+        <Col md="1"></Col>
       </Row>
       <Row>
-        <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
-        <Col xs="8"><GameTable  game={game} /></Col>
-        <Col xs="2"><PlayerBox  game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
+        <Col md="2"><PlayerBox  game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
+        <Col id="game-table" xs="8"><GameTable  game={game} /></Col>
+        <Col md="2"><PlayerBox  game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
       </Row>
       <Row>
-        <Col xs="1"></Col>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={5}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={6}/></Col>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={7}/></Col>
-        <Col xs="1"></Col>
+        <Col md="1"></Col>
+        <Col md="3"><PlayerBox  game={game} setGame={setGame} playerNum={5}/></Col>
+        <Col md="4"><PlayerBox  game={game} setGame={setGame} playerNum={6}/></Col>
+        <Col md="3"><PlayerBox  game={game} setGame={setGame} playerNum={7}/></Col>
+        <Col md="1"></Col>
       </Row>
       <Row>
-        <Col xs="2"><CardsBox game={game} /></Col>
-        <Col xs="5"><UserInfo game={game} setGame={setGame} playerNum={5} /></Col>
-        <Col xs="5"><ChatBox/></Col>
+        <Col md="4"><CardsBox game={game} /></Col>
+        <Col md="3"><UserInfo game={game} setGame={setGame} playerNum={5} /></Col>
+        <Col md="5"><ChatBox/></Col>
       </Row>
     </Container>
   );
