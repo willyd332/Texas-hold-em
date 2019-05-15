@@ -319,6 +319,7 @@ io.on("connection", (socket) => {
       }
       if (updatedGame.turnNumber < updatedGame.users.length - 1) {
         updatedGame.turnNumber += 1;
+        if (data.ante) {
         axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
         .then(function(res){
           console.log(res.data.cards)
@@ -329,6 +330,7 @@ io.on("connection", (socket) => {
           .catch(function (error) {
             console.log(error);
             });
+          }
       } else {
         updatedGame.turnNumber = 0;
         updatedGame.round = 'bet';

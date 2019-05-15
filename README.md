@@ -2,6 +2,18 @@
 
 
 
+
+#### things
+
+- used "https://deckofcardsapi.com/" for cards and deck logic
+- used "https://github.com/goldfire/pokersolver" to check hand values
+
+
+
+
+
+## PROJECT PLAN
+
 ### PROJECT REQUIREMENTS
 + REACT.js front end
 + Express.js Server with MongoDB back end

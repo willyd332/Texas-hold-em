@@ -22,7 +22,7 @@ function UserInfo(props){
 
 
   // STATE
-  const [currBet,setCurrBet] = useState(props.game.maxBet)
+  const [currBet,setCurrBet] = useState()
 
 
 
@@ -56,16 +56,35 @@ function UserInfo(props){
     };
 
 
-    const handleBet = (e) => {
-      e.preventDefault()
-
-      if (currBet >= game.maxBet && currBet <= player.money){
+    const handleBet = () => {
+      const bet = parseInt(currBet) + game.maxBet;
+      if (bet <= player.money){
       io.socket.emit('bet', {
         room: io.room,
         index: playerIndex,
-        bet: currBet,
+        bet: bet,
       });
       setCurrBet(0);
+    }
+    };
+    const handleCall = () => {
+      if (game.maxBet <= player.money){
+      io.socket.emit('bet', {
+        room: io.room,
+        index: playerIndex,
+        bet: game.maxBet,
+      });
+      setCurrBet();
+    }
+    };
+    const handleCheck = () => {
+      if (game.maxBet === 0){
+      io.socket.emit('bet', {
+        room: io.room,
+        index: playerIndex,
+        bet: 0,
+      });
+      setCurrBet();
     }
     };
 
@@ -88,14 +107,23 @@ function UserInfo(props){
           <button onClick={(e) => handleAnte(e)}>Dont Ante</button>
         </div>
       )
-      : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id ? (
-        <form onSubmit={(e)=>handleBet(e)}>
-          <input type="number" onChange={(e)=>setCurrBet(e.target.value)} value={currBet}></input>
+      : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id && player.status ? (
+        <div>
+          <form onSubmit={(e)=>{
+            e.preventDefault();
+            if (currBet.length > 0){
+              handleBet(e)
+            };
+          }}>
+            <input type="number" onChange={(e)=>setCurrBet(e.target.value)} value={currBet} placeholder={game.maxBet} ></input>
+            <button type="submit">Raise</button>
+          </form>
           <button onClick={handleFold}>Fold</button>
-          <input type="submit"></input>
-        </form>
+          <button onClick={handleCall}>Call</button>
+          <button onClick={handleCheck}>Check</button>
+        </div>
       ):(
-        <h5>Wait For Players</h5>
+        <h5>Not Playing</h5>
       )}
 
 
