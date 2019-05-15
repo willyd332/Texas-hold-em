@@ -8,47 +8,37 @@ import MainDiv from './MainDiv/MainDiv.jsx'
 import HomeDiv from './HomeDiv/HomeDiv.jsx'
 
 // Contexts
-import {socket, SocketContext} from './SocketContext/SocketContext.jsx'
+const SocketContext = React.createContext(0)
 
-function App() {
+function App(props) {
 
-  const [user,setUser] = React.useState(false)
-  const [room,setRoom] = React.useState('')
+  const socket = props.socket;
+  const [user,setUser] = React.useState(false);
+  const [room,setRoom] = React.useState(false);
 
-  React.useEffect(()=>{
-    sendUsername()
-  },[user])
-
-  const sendUsername = () => {
-    if(user){
-    socket.emit('userJoined', user);
-  }
+  const createUser = (username) => {
+    socket.emit('userJoined', username);
   }
 
-  socket.on('connected', (id)=>{
-    console.log(id + " has connected")
-    socket.off('connected')
+  socket.on('room', (createdUser)=>{
+    setRoom(createdUser.room);
+    setUser(createdUser.username);
+    socket.off('room');
   });
-
-  socket.on('room', (room)=>{
-    setRoom(room);
-    socket.off('room')
-  });
-
-  console.log(room + " is the current room")
 
   return (
     <div className="App">
       {/* for animation perhaps <canvas className="background"></canvas> */}
-      {user ?
+      {user && room ? (
         <SocketContext.Provider value={{socket: socket, room: room, user: user}}>
           <MainDiv/>
         </SocketContext.Provider>
-      :
-      <HomeDiv setUser={setUser}/>
-        }
+      )
+      :(
+        <HomeDiv createUser={createUser}/>
+      )}
     </div>
   );
 }
 
-export {App, socket};
+export  {App, SocketContext};

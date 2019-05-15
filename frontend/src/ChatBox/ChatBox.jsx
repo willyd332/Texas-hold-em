@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {SocketContext} from '../SocketContext/SocketContext.jsx'
+import {SocketContext} from '../App.jsx'
 
 // Components
 import ChatView from '../ChatView/ChatView.jsx';
