@@ -73,6 +73,7 @@ class User {
     this.betAmount = null;
     this.cardValue = null;
     this.status = false;
+    this.called = false;
   }
 }
 
@@ -236,11 +237,18 @@ io.on("connection", (socket) => {
 
     const allCalled = updatedGame.users.filter((user) => {
       if (user.status){
-        return user.betAmount < updatedGame.maxBet;
+        return user.called === false;
       };
       });
 
+      console.log(allCalled)
+
     if (allCalled.length == 0){
+
+    updatedGame.users = updatedGame.users.map((user) => {
+      user.called = false;
+      return user;
+      });
 
     if(!updatedGame.flop[0].value){
       updateRound('flop', updatedGame);
@@ -251,6 +259,7 @@ io.on("connection", (socket) => {
     } else {
       show(updatedGame);
     };
+
 
   } else {
     updatedGame.turnNumber = 0;
@@ -374,21 +383,22 @@ io.on("connection", (socket) => {
       updatedGame.maxBet = betAmount;
     }
 
+
+    if (data.type === 'call'){
+      updatedGame.users[data.index].called = true;
+      console.log(updatedGame.users[data.index].called)
+    }
+    if (data.type === 'raise'){
+      updatedGame.users = updatedGame.users.map((user) => {
+        user.called = false;
+        return user;
+        });
+      updatedGame.users[data.index].called = true;
+    }
+
     // CHECKS TO SEE IF PLAYER IS THE ONE WHO RAISED AND SKIPS THEM
     console.log(updatedGame.maxBet  + " THIS IS THE MAX BET")
     console.log(updatedGame.users[updatedGame.turnNumber].betAmount + " THIS IS THE USERS MAX BET")
-
-    // while(updatedGame.maxBet > 0 && updatedGame.users[updatedGame.turnNumber].betAmount === updatedGame.maxBet && updatedGame.turnNumber < updatedGame.users.length){
-    //
-    //   updatedGame.turnNumber += 1;
-    //
-    //   if (updatedGame.turnNumber === updatedGame.users.length){
-    //     console.log("Round Has Ended ----WHILE----")
-    //     updatedGame.turnNumber = 0;
-    //     changeRound(updatedGame);
-    //   }
-    //
-    // }
 
 
     // if the next player exists
@@ -415,10 +425,21 @@ io.on("connection", (socket) => {
         changeRound(updatedGame);
 
         }
-
       }
 
+      let going = true;
+      while (updatedGame.users[updatedGame.turnNumber].called && going){
 
+        updatedGame.turnNumber += 1;
+
+        if (updatedGame.turnNumber === updatedGame.users.length){
+          console.log("Round Has Ended ---While---")
+          going = false
+          updatedGame.turnNumber = 0;
+          changeRound(updatedGame);
+        }
+
+      }
       // Turn has been correctly updated
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;

@@ -57,12 +57,16 @@ function UserInfo(props){
 
 
     const handleBet = () => {
+      if (currBet === 0 && game.maxBet === 0){
+        handleCall()
+      }
       const bet = parseInt(currBet) + game.maxBet;
       if (bet <= player.money){
       io.socket.emit('bet', {
         room: io.room,
         index: playerIndex,
         bet: bet,
+        type: 'raise',
       });
       setCurrBet();
     }
@@ -73,6 +77,7 @@ function UserInfo(props){
         room: io.room,
         index: playerIndex,
         bet: game.maxBet,
+        type: 'call',
       });
       setCurrBet();
     }
@@ -83,6 +88,7 @@ function UserInfo(props){
         room: io.room,
         index: playerIndex,
         bet: 0,
+        type: 'call',
       });
       setCurrBet();
     }
