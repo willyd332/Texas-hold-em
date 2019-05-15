@@ -145,51 +145,28 @@ io.on("connection", (socket) => {
 // DRY MARKER vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DRY
 
 // DRAWS CARDS FOR FLOP RIVER AND TURN AND RESTARTS BETTING ROUND
-  const flop = (updatedGame) => {
+
+
+  const updateRound = (round, updatedGame) => {
 
     const gameIndex = findGame(updatedGame.room);
 
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=3`)
+    let drawCount = 1;
+    if (round === "flop"){
+      drawCount = 3;
+    };
+
+    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=${drawCount}`)
     .then(function(res){
-      console.log(res.data.cards)
+
+      if (round === 'flop'){
       updatedGame.flop = res.data.cards
-      updatedGame.round = 'bet';
-      updatedGame.maxBet = 0;
-      currGames[gameIndex] = updatedGame;
-      renderRoom(updatedGame.room, 'bet')
-      })
-      .catch(function (error) {
-        console.log(error);
-        });
-  }
-
-  const river = (updatedGame) => {
-
-    const gameIndex = findGame(updatedGame.room);
-
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
-    .then(function(res){
-      console.log(res.data.cards)
+      } else if (round === 'river'){
       updatedGame.river = res.data.cards[0];
-      updatedGame.round = 'bet';
-      updatedGame.maxBet = 0;
-      currGames[gameIndex] = updatedGame;
-      renderRoom(updatedGame.room, 'bet')
-      })
-      .catch(function (error) {
-        console.log(error);
-        });
-
-  }
-
-  const turn = (updatedGame) => {
-
-    const gameIndex = findGame(updatedGame.room);
-
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
-    .then(function(res){
-      console.log(res.data.cards)
+      } else {
       updatedGame.turn = res.data.cards[0];
+      }
+
       updatedGame.round = 'bet';
       updatedGame.maxBet = 0;
       currGames[gameIndex] = updatedGame;
@@ -251,6 +228,37 @@ io.on("connection", (socket) => {
 
 
 // DRY MARKER ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ DRY
+
+// THE BETTING ROUND HAS ENDED (EITHER SWITCH ROUND OR RESTART BETTING)
+  const changeRound = (updatedGame) => {
+
+    const gameIndex = findGame(updatedGame.room);
+
+    const allCalled = updatedGame.users.filter((user) => {
+      if (user.status){
+        return user.betAmount < updatedGame.maxBet;
+      };
+      });
+
+    if (allCalled.length == 0){
+
+    if(!updatedGame.flop[0].value){
+      updateRound('flop', updatedGame);
+    } else if (!updatedGame.river.value){
+      updateRound('river', updatedGame);
+    } else if (!updatedGame.turn.value){
+      updateRound('turn', updatedGame);
+    } else {
+      show(updatedGame);
+    };
+
+  } else {
+    updatedGame.turnNumber = 0;
+    console.log("updating turnNumber to " + updatedGame.turnNumber)
+    currGames[gameIndex] = updatedGame;
+    renderRoom(updatedGame.room, 'bet');
+  };
+  }
 
 
 
@@ -330,6 +338,9 @@ io.on("connection", (socket) => {
           .catch(function (error) {
             console.log(error);
             });
+          } else {
+            currGames[gameIndex] = updatedGame;
+            renderRoom(data.room, 'ante')
           }
       } else {
         updatedGame.turnNumber = 0;
@@ -356,16 +367,37 @@ io.on("connection", (socket) => {
     const betAmount = parseInt(data.bet);
 
     updatedGame.users[data.index].money -= betAmount;
+    updatedGame.users[data.index].betAmount = betAmount;
+
     updatedGame.pot += betAmount;
     if (betAmount > updatedGame.maxBet){
       updatedGame.maxBet = betAmount;
     }
 
+    // CHECKS TO SEE IF PLAYER IS THE ONE WHO RAISED AND SKIPS THEM
+    console.log(updatedGame.maxBet  + " THIS IS THE MAX BET")
+    console.log(updatedGame.users[updatedGame.turnNumber].betAmount + " THIS IS THE USERS MAX BET")
+
+    // while(updatedGame.maxBet > 0 && updatedGame.users[updatedGame.turnNumber].betAmount === updatedGame.maxBet && updatedGame.turnNumber < updatedGame.users.length){
+    //
+    //   updatedGame.turnNumber += 1;
+    //
+    //   if (updatedGame.turnNumber === updatedGame.users.length){
+    //     console.log("Round Has Ended ----WHILE----")
+    //     updatedGame.turnNumber = 0;
+    //     changeRound(updatedGame);
+    //   }
+    //
+    // }
+
+
     // if the next player exists
     if (updatedGame.turnNumber < updatedGame.users.length - 1) {
 
+      // if (updatedGame.maxBet == 0){
       console.log("normal turn increase")
       updatedGame.turnNumber += 1;
+      // }
 
       // if the next (now current) players status is false
       if (!updatedGame.users[updatedGame.turnNumber].status) {
@@ -380,36 +412,23 @@ io.on("connection", (socket) => {
           console.log("last player was false, changing round")
           updatedGame.turnNumber = 0;
 
-          if(!updatedGame.flop[0].value){
-            flop(updatedGame);
-          } else if (!updatedGame.river.value){
-            river(updatedGame);
-          } else if (!updatedGame.turn.value){
-            turn(updatedGame);
-          } else {
-            show(updatedGame);
-          };
+        changeRound(updatedGame);
 
-        };
-      };
+        }
+
+      }
+
+
       // Turn has been correctly updated
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;
       renderRoom(data.room, 'bet');
   } else {
-    console.log("Round Has Ended")
+    console.log("Round Has Ended ---ELSE---")
     updatedGame.turnNumber = 0;
 
+    changeRound(updatedGame);
 
-    if(!updatedGame.flop[0].value){
-      flop(updatedGame);
-    } else if (!updatedGame.river.value){
-      river(updatedGame);
-    } else if (!updatedGame.turn.value){
-      turn(updatedGame);
-    } else {
-      show(updatedGame);
-    };
   };
   });
 
@@ -440,16 +459,7 @@ io.on("connection", (socket) => {
           console.log("last player was false, changing round")
           updatedGame.turnNumber = 0;
 
-
-          if(!updatedGame.flop[0].value){
-            flop(updatedGame);
-          } else if (!updatedGame.river.value){
-            river(updatedGame);
-          } else if (!updatedGame.turn.value){
-            turn(updatedGame);
-          } else {
-            show(updatedGame);
-          };
+          changeRound(updatedGame);
 
         };
       };
@@ -462,15 +472,7 @@ io.on("connection", (socket) => {
     updatedGame.turnNumber = 0;
      ;
 
-    if(!updatedGame.flop[0].value){
-      flop(updatedGame);
-    } else if (!updatedGame.river.value){
-      river(updatedGame);
-    } else if (!updatedGame.turn.value){
-      turn(updatedGame);
-    } else {
-      show(updatedGame);
-    };
+     changeRound(updatedGame);
 
   };
   });

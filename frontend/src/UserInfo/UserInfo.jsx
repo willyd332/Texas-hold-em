@@ -64,7 +64,7 @@ function UserInfo(props){
         index: playerIndex,
         bet: bet,
       });
-      setCurrBet(0);
+      setCurrBet();
     }
     };
     const handleCall = () => {
@@ -102,25 +102,27 @@ function UserInfo(props){
 
 
       {game.round === 'ante' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id ? (
-        <div>
-          <button onClick={(e) => handleAnte(e)} value={true} >Ante</button>
-          <button onClick={(e) => handleAnte(e)}>Dont Ante</button>
+        <div  className="actions-box" >
+          <button className="action-btn" onClick={(e) => handleAnte(e)} value={true} >Ante</button>
+          <button className="action-btn" onClick={(e) => handleAnte(e)}>Dont Ante</button>
         </div>
       )
       : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id && player.status ? (
-        <div>
-          <form onSubmit={(e)=>{
+        <div className="actions-box" >
+          <form className="bet-form" onSubmit={(e)=>{
             e.preventDefault();
-            if (currBet.length > 0){
+            if (currBet){
               handleBet(e)
             };
           }}>
-            <input type="number" onChange={(e)=>setCurrBet(e.target.value)} value={currBet} placeholder={game.maxBet} ></input>
-            <button type="submit">Raise</button>
+            <button className="bet-form-input" type="submit">Call {game.maxBet} & Raise By</button>
+            <input  className="bet-form-input" type="number" onChange={(e)=>setCurrBet(e.target.value)} placeholder='0' ></input>
           </form>
-          <button onClick={handleFold}>Fold</button>
-          <button onClick={handleCall}>Call</button>
-          <button onClick={handleCheck}>Check</button>
+          <div className="user-actions">
+            <button className="action-btn" onClick={handleFold}>Fold</button>
+            <button className="action-btn" onClick={handleCall}>Call {game.maxBet}</button>
+            <button className="action-btn" onClick={handleCheck}>Check</button>
+          </div>
         </div>
       ):(
         <h5>Not Playing</h5>
