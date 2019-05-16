@@ -53,19 +53,19 @@ function MainDiv(props){
   return(
     <Container className="game-container" fluid={true}>
       <Row>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={0}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={1}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={2}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[0]}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[1]}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[2]}/></Col>
       </Row>
       <Row>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={3} middle="true"/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[3]} middle="true"/></Col>
         <Col id="game-table" xs="6"><GameTable  game={game} /></Col>
-        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={4} middle="true"/></Col>
+        <Col xs="3"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[4]} middle="true"/></Col>
       </Row>
       <Row>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={5}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={6}/></Col>
-        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={7}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[5]}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[6]}/></Col>
+        <Col xs="4"><PlayerBox  game={game} setGame={setGame} playerNum={game.setup[7]}/></Col>
       </Row>
       <Row className="info-box" >
         <Col className="this-user" id="card-box-col" xs="3"><CardsBox game={game} /></Col>

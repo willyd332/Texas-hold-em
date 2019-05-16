@@ -27,6 +27,7 @@ function UserInfo(props){
 
 
   const io      = useContext(SocketContext);
+  console.log(io)
   const game    = props.game;
   let   player;
   let   playerIndex;

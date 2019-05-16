@@ -62,6 +62,7 @@ class Game {
     this.turn = {};
     this.round = null;
     this.winners = [];
+    this.setup = [0,1,2,3,4,5,6,7]
   }
 }
 class User {
@@ -139,6 +140,31 @@ const findCardValue = (user, game) => {
 };
 
 
+rotateSetup = (setup, usersLength) =>{
+
+  let rotated = [];
+  for (let i = 0; i < usersLength; i++){
+    rotated.push(setup.shift())
+  }
+  rotated.unshift(rotated.pop());
+
+  newArr = rotated.concat(setup);
+
+  console.log(newArr)
+
+  return  newArr;
+
+};
+
+rotateUsers = (users) => {
+
+    users.push(users.shift());
+
+    console.log(users)
+
+  return users;
+
+};
 
 
 // USER CONNECTS
@@ -192,6 +218,8 @@ io.on("connection", (socket) => {
   // START A NEW ROUND
   const restartGame = (updatedGame) => {
 
+    console.log("restarting game")
+
     const gameIndex = findGame(updatedGame.room);
 
 
@@ -207,6 +235,12 @@ io.on("connection", (socket) => {
       user.status = false;
       return user;
     });
+
+    console.log("ROTATING USERS")
+
+    updatedGame.setup = rotateSetup(updatedGame.setup, updatedGame.users.length);
+    updatedGame.users = rotateUsers(updatedGame.users);
+
     currGames[gameIndex] = updatedGame;
 
     axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/shuffle/`)
