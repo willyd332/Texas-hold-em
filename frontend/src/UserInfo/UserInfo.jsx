@@ -132,7 +132,7 @@ function UserInfo(props){
           </div>
         </div>
       ): activePlayers.length === 1 && activePlayers[0] === player && game.round !== "ante" ? (
-        <button className="action-btn" onClick={handleCheck}>FINISH ROUND</button>
+        <button className="action-btn">Round Over</button>
       ) : (
         <div className="actions-box" >
           <form className="bet-form">

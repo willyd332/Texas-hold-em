@@ -113,7 +113,6 @@ const findGame = (room) => {
 
 const findCardValue = (user, game) => {
 
-  console.log(game)
 
   if (user.status && game.turn.code) {
 
@@ -128,6 +127,10 @@ const findCardValue = (user, game) => {
     }
 
     const solvedHand = Hand.solve(hand);
+
+
+    solvedHand.userId = user.socketId;
+
 
     return solvedHand;
 
@@ -223,33 +226,41 @@ io.on("connection", (socket) => {
     const solvedHands = [];
 
     updatedGame.users.forEach((user) => {
-      console.log("this is the hand -------------------")
-      console.log(user.hand)
-      console.log("this is the user -------------------")
-      console.log(user)
-      if (user.hand[0].value && user.status) {
-        const potato = findCardValue(user, updatedGame)
-        if (potato) {
-          solvedHands.push(potato)
-        }
+
+      if (user.hand[0].value && user.status === true) {
+        const valuedHand = findCardValue(user, updatedGame)
+        solvedHands.push(valuedHand)
       }
+
     });
 
-
+    let winners = [];
     let winnerIndex = [];
     console.log("***********************SolvedHands****************")
     console.log(solvedHands)
+
     if (solvedHands.length > 0) {
 
-      const winners = Hand.winners(solvedHands);
+      winners = Hand.winners(solvedHands);
 
-      solvedHands.forEach((hand, index) => {
         winners.forEach((winner) => {
-          if (winner === hand) {
-            winnerIndex.push(index);
-          };
-        });
+          updatedGame.users.forEach((user, index) => {
+            if (winner.userId === user.socketId) {
+              winnerIndex.push(index);
+            };
+            });
       });
+
+      console.log("WINNERS AND USERS ===========================")
+      console.log(winners)
+      console.log(updatedGame.users)
+
+      if (winners.length === 0){
+        winners = updatedGame.users.filter((user)=>{
+          return user.status
+          });
+      }
+
 
       winners.forEach((winner) => {
 
@@ -577,6 +588,9 @@ io.on("connection", (socket) => {
   // PLAYER SUBMITS BET
   socket.on('fold', (data) => {
 
+    console.log("FOLDING ---------------------------")
+    console.log(data)
+
     const gameIndex = findGame(data.room);
     const updatedGame = currGames[gameIndex];
     updatedGame.users[data.index].status = false;
@@ -612,7 +626,13 @@ io.on("connection", (socket) => {
       // Turn has been correctly updated
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;
-      renderRoom(data.room, 'bet');
+
+      if (updatedGame.users.filter((user)=>{return user.status}).length === 1){
+        show(updatedGame)
+      } else {
+        renderRoom(data.room, 'bet');
+      }
+
     } else {
       console.log("Round Has Ended")
       let firstTurnFinder = 'none';

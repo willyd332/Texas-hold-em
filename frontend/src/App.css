@@ -194,6 +194,7 @@ div {
   margin-top: 1%;
 }
 .ante-btn{
+  border: 2px solid #4C337F;
   margin: 3%;
   width: 80%;
   height: 40%;
@@ -336,5 +337,15 @@ div {
     font-size: 30px;
     font-weight: bold;
     color: white;
+  }
+  .ante-btn{
+    border: 1px solid #4C337F;
+    margin: 5%;
+    margin-top: 30%;
+    width: 90%;
+    height: 30%;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
   }
 }
