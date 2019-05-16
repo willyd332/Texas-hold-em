@@ -13,7 +13,7 @@ function GameTable(props){
 
   return(
     <div>
-      <h1>${game.pot}</h1>
+      <h1 id="pot" >${game.pot}</h1>
       {game.flop[0].value &&
         <div className="table-cards" >
           <img className="card-on-table" src={game.flop[0].image} alt={game.flop[0].value && game.flop[0].value + ' ' + game.flop[0].suit} ></img>

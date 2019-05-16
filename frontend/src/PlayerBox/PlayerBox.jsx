@@ -10,9 +10,9 @@ import {SocketContext} from '../App.jsx';
 
 const defaultPlayer = {
   socketId: null,
-  name: "PLAYER MISSING",
+  name: "",
   hand: {card1: null, card2: null,},
-  money: 0,
+  money: null,
   bettingRoundStatus: null,
   betAmount: null,
   cardValue: null,
@@ -54,7 +54,9 @@ function PlayerBox(props){
 
   return(
     <div className={playerClass}>
-
+      {game.turnNumber === props.playerNum &&
+        <img className="poker-chips" src="https://www.pinclipart.com/picdir/middle/104-1041818_chips-png-transparent-image-pngpix-poker-clipart.png" ></img>
+      }
       <div className="player-display">
         <p className="player-info-name"><strong>{player.name}</strong></p><br/>
         <p className="player-info-money"><strong>${player.money}</strong></p>
