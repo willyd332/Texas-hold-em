@@ -1,73 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Bootstrap
-import { Container, Row, Jumbotron } from 'reactstrap';
+import { Container, Row, Jumbotron, Button } from 'reactstrap';
+
+// Components
+import LoginForm from '../LoginForm/LoginForm.jsx'
+import RegisterForm from '../RegisterForm/RegisterForm.jsx'
 
 function HelloWorld(props){
 
-  const [username,setUsername] = useState('')
-  const [currPassword,setPassword] = useState('')
-  const [wrongInfo,setWrongInfo] = useState(false)
+  const [logged,setLogged] = useState(false);
+  const [sessionUser,setSessionUser] = useState(false);
 
-  const handleUsername = (e) => {
-    setUsername(e.target.value)
+  useEffect(()=>{
+
+    checkForSession();
+
+  },[])
+
+  const checkForSession = async () => {
+    if (!logged){
+    let areYouLogged = await fetch('http://localhost:9000/auth/session', {
+      credentials: 'include'
+    });
+        areYouLogged = await areYouLogged.json();
+
+    console.log(areYouLogged)
+
+    setSessionUser(areYouLogged.name)
+    if (!logged){
+    setLogged(areYouLogged.data);
   }
-  const handlePassword = (e) => {
-    setPassword(e.target.value)
   }
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (username.length > 0 && currPassword.length > 0){
-    try {
-
-      let loggedUser = await fetch('http://localhost:9000/auth/login', {
-        credentials: "include",
-        method: "post",
-        body: {
-          username: username,
-          password: currPassword,
-        },
-        header: {
-          'Content-Type': "application/json"
-        }
-      });
-
-      loggedUser = await loggedUser.json();
-      console.log(loggedUser)
-
-      if(loggedUser.data === "Login Successful"){
-        props.createUser(username)
-      } else {
-        setWrongInfo(true);
-      }
-
-    } catch(err){
-      console.log(err)
-    }
-  }
-
   }
 
   return(
     <Container>
-      <Jumbotron fluid>
-        <Container fluid>
-          <h1 className="display-3">Hold'em.io</h1>
+      <Jumbotron id="main-title">
+        <Container className="title-info" >
+          <h1 className="display-3 title-header">Hold'em.io</h1>
           <p className="lead">Texas hold'em online</p>
+          <span>Powered by deckofcardsapi.com</span>
         </Container>
       </Jumbotron>
-      <Row>
-        <form onSubmit={(e)=>{handleSubmit(e)}}>
-          {wrongInfo &&
-            <span className="wrong-info" >wrong username or password</span>
-          }
-          <input onChange={handleUsername} value={username} placeholder="username"/>
-          <input type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
-          <input type="submit" />
-        </form>
-      </Row>
-      <Row>
-      </Row>
+      {!logged ? (
+        <div className="auth-forms">
+          <h1>LOGIN</h1>
+          <Row>
+            <LoginForm createUser={props.createUser} />
+          </Row>
+          <h1>REGISTER</h1>
+          <Row>
+            <RegisterForm createUser={props.createUser} />
+          </Row>
+        </div>
+      ) : (
+        <div>
+          <Button onClick={()=>{props.createUser(sessionUser)}} >JOIN GAME AS {sessionUser}</Button>
+          <Button onClick={()=>{setLogged(false)}} >LOGIN AS DIFFERENT USER</Button>
+        </div>
+      )}
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <span>Powered by deckofcardsapi.com</span>
     </Container>
   );
 }

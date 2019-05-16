@@ -1,6 +1,11 @@
 
 @import url("https://fonts.googleapis.com/css?family=Viga");
 
+.App{
+  background-color: #860111;
+  height: 100vh
+}
+
 div {
   /* border: 1px solid black;
   margin: 1px 0px; */
@@ -71,6 +76,22 @@ div {
 }
 .messageInput:focus{
   outline: none;
+}
+#main-title{
+  background-color: #4C337F;
+  border-radius: 20px;
+}
+.auth-forms{
+  margin: 10px;
+  padding: 20px;
+}
+.title-header{
+  color: white;
+  text-shadow: 0px 0px 50px black;
+}
+.title-info{
+  background-color: #076324;
+  border-radius: 20px;
 }
 .sittingOut {
   background: #860111;

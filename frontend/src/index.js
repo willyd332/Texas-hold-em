@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './App.css';
 import {App} from './App.jsx';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom'
@@ -15,7 +16,7 @@ const socket = openSocket('http://localhost:9000');
 
 ReactDOM.render(
   <BrowserRouter>
-  <App socket={socket}/>
+  <App className="App" socket={socket}/>
   </BrowserRouter>
   , document.getElementById('root'));
 
