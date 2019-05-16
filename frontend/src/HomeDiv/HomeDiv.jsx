@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Bootstrap
-import { Container, Row, Jumbotron, Col, Button } from 'reactstrap';
+import { Container, Row, Jumbotron } from 'reactstrap';
 
 function HelloWorld(props){
 

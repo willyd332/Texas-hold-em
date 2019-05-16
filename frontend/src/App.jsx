@@ -1,7 +1,5 @@
 import React from 'react';
 import './App.css';
-import { Route, Switch } from 'react-router-dom';
-import openSocket from 'socket.io-client'
 
 // Components
 import MainDiv from './MainDiv/MainDiv.jsx'

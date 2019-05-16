@@ -1,22 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 
 // Components
 import CardInHand from '../CardInHand/CardInHand.jsx';
 
 // Context
 import { SocketContext } from '../App.jsx';
-
-
-const defaultPlayer = {
-  socketId: null,
-  name: "PLAYER MISSING",
-  hand: {card1: null, card2: null,},
-  money: 0,
-  bettingRoundStatus: null,
-  betAmount: null,
-  cardValue: null,
-  status: null,
-};
 
 
 

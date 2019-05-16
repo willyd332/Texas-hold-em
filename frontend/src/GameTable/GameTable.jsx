@@ -1,19 +1,17 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 
 // Reactstrap
 
 
 // Context
-import { SocketContext } from '../App.jsx'
 
 function GameTable(props){
   const game = props.game;
-  const io   = useContext(SocketContext);
 
 
   return(
     <div>
-      <h1>${game.pot}</h1>
+      <h1 id="pot" >${game.pot}</h1>
       {game.flop[0].value &&
         <div className="table-cards" >
           <img className="card-on-table" src={game.flop[0].image} alt={game.flop[0].value && game.flop[0].value + ' ' + game.flop[0].suit} ></img>

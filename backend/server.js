@@ -6,6 +6,7 @@ const session = require('express-session')
 const socketIo = require("socket.io");
 const authController = require('./controllers/authController');
 const axios = require('axios')
+const Hand = require('pokersolver').Hand;
 
 require('dotenv').config()
 require('./db/db');
@@ -60,6 +61,7 @@ class Game {
     this.river = {};
     this.turn =  {};
     this.round = null;
+    this.winners = [];
   }
 }
 class User {
@@ -72,6 +74,7 @@ class User {
     this.betAmount = null;
     this.cardValue = null;
     this.status = false;
+    this.called = false;
   }
 }
 
@@ -103,13 +106,40 @@ const findGame = (room) => {
   for(let i = 0; i < currGames.length; i++){
     if (currGames[i].room === room) {
       return i
-    }
-    }
+    };
+  };
+};
+
+
+const findCardValue = (user, game) => {
+
+  console.log(game)
+
+  if (user.status && game.turn.code){
+
+  const hand = [user.hand[0].code,user.hand[1].code,game.flop[0].code,game.flop[1].code,game.flop[2].code,game.river.code,game.turn.code];
+
+  for (let i = 0; i < hand.length; i++){
+    if (hand[i][0] === '0'){
+      let newString = 'T';
+      newString += hand[i][1];
+      hand[i] = newString;
+  }
+  }
+
+  const solvedHand = Hand.solve(hand);
+
+  return solvedHand;
+
 }
+
+};
+
+
+
 
   // USER CONNECTS
 io.on("connection", (socket) => {
-
 
 
 
@@ -120,35 +150,27 @@ io.on("connection", (socket) => {
   }
 
 
-// DRY MARKER vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DRY
-
-// DRAWS CARDS FOR FLOP RIVER AND TURN AND RESTARTS BETTING ROUND
-  const flop = (updatedGame) => {
+// CHANGE TH ROUND TO THE NEXT ONE
+  const updateRound = (round, updatedGame) => {
 
     const gameIndex = findGame(updatedGame.room);
 
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=3`)
+    let drawCount = 1;
+    if (round === "flop"){
+      drawCount = 3;
+    };
+
+    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=${drawCount}`)
     .then(function(res){
-      console.log(res.data.cards)
+
+      if (round === 'flop'){
       updatedGame.flop = res.data.cards
-      updatedGame.round = 'bet';
-      updatedGame.maxBet = 0;
-      currGames[gameIndex] = updatedGame;
-      renderRoom(updatedGame.room, 'bet')
-      })
-      .catch(function (error) {
-        console.log(error);
-        });
-  }
-
-  const river = (updatedGame) => {
-
-    const gameIndex = findGame(updatedGame.room);
-
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
-    .then(function(res){
-      console.log(res.data.cards)
+      } else if (round === 'river'){
       updatedGame.river = res.data.cards[0];
+      } else {
+      updatedGame.turn = res.data.cards[0];
+      }
+
       updatedGame.round = 'bet';
       updatedGame.maxBet = 0;
       currGames[gameIndex] = updatedGame;
@@ -160,27 +182,159 @@ io.on("connection", (socket) => {
 
   }
 
-  const turn = (updatedGame) => {
+
+// START A NEW ROUND
+  const restartGame = (updatedGame) => {
 
     const gameIndex = findGame(updatedGame.room);
 
-    axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=1`)
-    .then(function(res){
-      console.log(res.data.cards)
-      updatedGame.turn = res.data.cards[0];
-      updatedGame.round = 'bet';
-      updatedGame.maxBet = 0;
-      currGames[gameIndex] = updatedGame;
-      renderRoom(updatedGame.room, 'bet')
-      })
-      .catch(function (error) {
-        console.log(error);
-        });
+
+    updatedGame.round = 'ante';
+    updatedGame.flop = [{},{},{}];
+    updatedGame.river = {};
+    updatedGame.turn = {};
+    updatedGame.maxBet = 0;
+    updatedGame.turnNumber = 0;
+    updatedGame.winners = [];
+    updatedGame.users = updatedGame.users.map((user)=>{
+      user.hand = [{},{}];
+      user.status = false;
+      return user;
+      });
+    currGames[gameIndex] = updatedGame;
+
+  axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/shuffle/`)
+  .then(renderRoom(updatedGame.room, 'show'))
+  .catch(function(error){
+    console.log(error);
+    });
 
   }
 
-// DRY MARKER ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ DRY
 
+// SHOW THE CARDS AND CALCULATE WINNER
+  const show = (updatedGame) => {
+
+    const gameIndex = findGame(updatedGame.room);
+
+    const solvedHands = [];
+
+    updatedGame.users.forEach((user) => {
+      console.log("this is the hand -------------------")
+      console.log(user.hand)
+      console.log("this is the user -------------------")
+      console.log(user)
+      if(user.hand[0].value){
+        const potato = findCardValue(user, updatedGame)
+        if (potato){
+         solvedHands.push(potato)
+       }
+       }
+        });
+
+
+    let winnerIndex = [];
+    console.log("***********************SolvedHands****************")
+    console.log(solvedHands)
+    if (solvedHands.length > 0){
+
+    const winners = Hand.winners(solvedHands);
+
+    solvedHands.forEach((hand, index) => {
+        winners.forEach((winner) => {
+          if (winner === hand){
+            winnerIndex.push(index);
+          };
+          });
+      });
+
+        winners.forEach((winner) => {
+
+          updatedGame.users[winnerIndex[0]].money += (Math.round(updatedGame.pot/winners.length));
+
+
+        });
+      }
+
+      if (!updatedGame.turn.code){
+        updatedGame.users.forEach((user) => {
+          if (user.status){
+          user += updatedGame.pot;
+        };
+        });
+      }
+
+        updatedGame.pot = 0;
+        updatedGame.winners = winnerIndex;
+        updatedGame.round = 'finished'
+        currGames[gameIndex] = updatedGame;
+        renderRoom(updatedGame.room, 'finish')
+
+
+        setTimeout(function(){restartGame(updatedGame)}, 6000);
+
+  };
+
+
+// THE BETTING ROUND HAS ENDED (EITHER SWITCH ROUND OR RESTART BETTING)
+  const changeRound = (updatedGame) => {
+
+    const gameIndex = findGame(updatedGame.room);
+
+    const activePlayers = updatedGame.users.filter((user) => {
+      return user.status
+      });
+
+    if (activePlayers.length <= 1){
+
+
+      console.log("------------line 274 -----------------")
+
+      show(updatedGame);
+
+    } else {
+
+      console.log("------------line 280 -----------------")
+
+    const allCalled = updatedGame.users.filter((user) => {
+      if (user.status){
+        return user.called === false;
+      };
+      });
+
+      console.log(allCalled)
+
+    if (allCalled.length == 0){
+
+    updatedGame.users = updatedGame.users.map((user) => {
+      user.called = false;
+      return user;
+      });
+
+    if(!updatedGame.flop[0].value){
+      updateRound('flop', updatedGame);
+    } else if (!updatedGame.river.value){
+      updateRound('river', updatedGame);
+    } else if (!updatedGame.turn.value){
+      updateRound('turn', updatedGame);
+    } else {
+      show(updatedGame);
+    };
+
+
+  } else {
+    let firstTurnFinder = 'none';
+    updatedGame.users.forEach((user, index)=>{
+      if (firstTurnFinder === 'none' && user.status){
+        firstTurnFinder = index;
+      }
+      });
+    updatedGame.turnNumber = firstTurnFinder;
+    currGames[gameIndex] = updatedGame;
+    renderRoom(updatedGame.room, 'bet');
+  };
+  }
+  }
 
 
 
@@ -248,30 +402,52 @@ io.on("connection", (socket) => {
       }
       if (updatedGame.turnNumber < updatedGame.users.length - 1) {
         updatedGame.turnNumber += 1;
+        if (data.ante) {
         axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
         .then(function(res){
           console.log(res.data.cards)
           updatedGame.users[data.index].hand = res.data.cards
           currGames[gameIndex] = updatedGame;
-          console.log(updatedGame.users[data.index].hand)
           renderRoom(data.room, 'ante')
           })
           .catch(function (error) {
             console.log(error);
             });
+          } else {
+            currGames[gameIndex] = updatedGame;
+            renderRoom(data.room, 'ante')
+          }
       } else {
-        updatedGame.turnNumber = 0;
+        let firstTurnFinder = 'none';
+        updatedGame.users.forEach((user, index)=>{
+          console.log(user)
+          console.log("below is first and status 239857098342590890")
+          console.log(user.status)
+          console.log(firstTurnFinder)
+          if (firstTurnFinder === 'none' && user.status){
+            firstTurnFinder = index;
+          }
+          });
+        updatedGame.turnNumber = firstTurnFinder;
+        console.log(updatedGame.turnNumber)
+        console.log("last ante had been anted ---------------")
         updatedGame.round = 'bet';
+        if (data.ante){
         axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
         .then(function(res){
           updatedGame.users[data.index].hand = res.data.cards
           currGames[gameIndex] = updatedGame;
-          console.log(updatedGame.users[data.index].hand)
           renderRoom(data.room, 'bet')
           })
         .catch(function (error) {
           console.log(error);
           });
+        } else {
+
+          console.log("------------line 408 server -----------")
+
+          show(updatedGame);
+        }
       }
     });
 
@@ -285,16 +461,38 @@ io.on("connection", (socket) => {
     const betAmount = parseInt(data.bet);
 
     updatedGame.users[data.index].money -= betAmount;
+    updatedGame.users[data.index].betAmount = betAmount;
+
     updatedGame.pot += betAmount;
     if (betAmount > updatedGame.maxBet){
       updatedGame.maxBet = betAmount;
     }
 
+
+    if (data.type === 'call'){
+      updatedGame.users[data.index].called = true;
+      console.log(updatedGame.users[data.index].called)
+    }
+    if (data.type === 'raise'){
+      updatedGame.users = updatedGame.users.map((user) => {
+        user.called = false;
+        return user;
+        });
+      updatedGame.users[data.index].called = true;
+    }
+
+    // CHECKS TO SEE IF PLAYER IS THE ONE WHO RAISED AND SKIPS THEM
+    console.log(updatedGame.maxBet  + " THIS IS THE MAX BET")
+    console.log(updatedGame.users[updatedGame.turnNumber].betAmount + " THIS IS THE USERS MAX BET")
+
+
     // if the next player exists
     if (updatedGame.turnNumber < updatedGame.users.length - 1) {
 
+      // if (updatedGame.maxBet == 0){
       console.log("normal turn increase")
       updatedGame.turnNumber += 1;
+      // }
 
       // if the next (now current) players status is false
       if (!updatedGame.users[updatedGame.turnNumber].status) {
@@ -307,38 +505,56 @@ io.on("connection", (socket) => {
           // the player after the false player does not exist
         } else {
           console.log("last player was false, changing round")
-          updatedGame.turnNumber = 0;
 
-          if(!updatedGame.flop[0].value){
-            flop(updatedGame);
-          } else if (!updatedGame.river.value){
-            river(updatedGame);
-          } else if (!updatedGame.turn.value){
-            turn(updatedGame);
-          } else {
-            console.log("SHOW YOUR CARDS.......TODO")
-          };
+          let firstTurnFinder = 'none';
+          updatedGame.users.forEach((user, index)=>{
+            if (firstTurnFinder === 'none' && user.status){
+              firstTurnFinder = index;
+            }
+            });
+          updatedGame.turnNumber = firstTurnFinder;
 
-        };
-      };
+
+        changeRound(updatedGame);
+
+        }
+      }
+
+      let going = true;
+      while (updatedGame.users[updatedGame.turnNumber].called && going){
+
+        updatedGame.turnNumber += 1;
+
+        if (updatedGame.turnNumber === updatedGame.users.length){
+          console.log("Round Has Ended ---While---")
+          going = false
+          let firstTurnFinder = 'none';
+          updatedGame.users.forEach((user, index)=>{
+            if (firstTurnFinder === 'none' && user.status){
+              firstTurnFinder = index;
+            }
+            });
+          updatedGame.turnNumber = firstTurnFinder;
+          changeRound(updatedGame);
+        }
+
+      }
       // Turn has been correctly updated
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;
       renderRoom(data.room, 'bet');
   } else {
-    console.log("Round Has Ended")
-    updatedGame.turnNumber = 0;
+    console.log("Round Has Ended ---ELSE---")
+    let firstTurnFinder = 'none';
+    updatedGame.users.forEach((user, index)=>{
+      if (firstTurnFinder === 'none' && user.status){
+        firstTurnFinder = index;
+      }
+      });
+    updatedGame.turnNumber = firstTurnFinder;
 
+    changeRound(updatedGame);
 
-    if(!updatedGame.flop[0].value){
-      flop(updatedGame);
-    } else if (!updatedGame.river.value){
-      river(updatedGame);
-    } else if (!updatedGame.turn.value){
-      turn(updatedGame);
-    } else {
-      console.log("SHOW YOUR CARDS.......TODO")
-    };
   };
   });
 
@@ -367,18 +583,15 @@ io.on("connection", (socket) => {
           // the player after the false player does not exist
         } else {
           console.log("last player was false, changing round")
-          updatedGame.turnNumber = 0;
+          let firstTurnFinder = 'none';
+          updatedGame.users.forEach((user, index)=>{
+            if (firstTurnFinder === 'none' && user.status){
+              firstTurnFinder = index;
+            }
+            });
+          updatedGame.turnNumber = firstTurnFinder;
 
-
-          if(!updatedGame.flop[0].value){
-            flop(updatedGame);
-          } else if (!updatedGame.river.value){
-            river(updatedGame);
-          } else if (!updatedGame.turn.value){
-            turn(updatedGame);
-          } else {
-            console.log("SHOW YOUR CARDS.......TODO")
-          };
+          changeRound(updatedGame);
 
         };
       };
@@ -388,18 +601,16 @@ io.on("connection", (socket) => {
       renderRoom(data.room, 'bet');
   } else {
     console.log("Round Has Ended")
-    updatedGame.turnNumber = 0;
+    let firstTurnFinder = 'none';
+    updatedGame.users.forEach((user, index)=>{
+      if (firstTurnFinder === 'none' && user.status){
+        firstTurnFinder = index;
+      }
+      });
+    updatedGame.turnNumber = firstTurnFinder;
      ;
 
-    if(!updatedGame.flop[0].value){
-      flop(updatedGame);
-    } else if (!updatedGame.river.value){
-      river(updatedGame);
-    } else if (!updatedGame.turn.value){
-      turn(updatedGame);
-    } else {
-      console.log("SHOW YOUR CARDS.......TODO")
-    };
+     changeRound(updatedGame);
 
   };
   });
@@ -418,6 +629,7 @@ io.on("connection", (socket) => {
         if(currGames[i].users[x]){
           if(currGames[i].users[x].socketId === socket.id){
             currGames[i].users.splice(x,1);
+            currGames[i].turnNumber -= 1;
             renderRoom(currGames[i].room)
             if(currGames[i].users.length === 0){
               currGames.splice(i,1); break;
