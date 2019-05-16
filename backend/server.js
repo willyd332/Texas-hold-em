@@ -324,6 +324,7 @@ io.on("connection", (socket) => {
 
         updatedGame.users = updatedGame.users.map((user) => {
           user.called = false;
+          user.betAmount = 0;
           return user;
         });
 
@@ -346,6 +347,9 @@ io.on("connection", (socket) => {
           }
         });
         updatedGame.turnNumber = firstTurnFinder;
+
+        console.log("MAX BET----- " + updatedGame.maxBet)
+
         currGames[gameIndex] = updatedGame;
         renderRoom(updatedGame.room, 'bet');
       };
