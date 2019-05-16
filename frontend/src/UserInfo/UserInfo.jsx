@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 
 // Context
 import {SocketContext} from '../App.jsx';
@@ -28,7 +28,6 @@ function UserInfo(props){
 
   const io      = useContext(SocketContext);
   const game    = props.game;
-  const setGame = props.setGame;
   let   player;
   let   playerIndex;
   game.users.forEach((user,index)=>{
@@ -107,8 +106,8 @@ function UserInfo(props){
 
       {game.round === 'ante' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id ? (
         <div  className="actions-box" >
-          <button className="action-btn" onClick={(e) => handleAnte(e)} value={true} >Ante</button>
-          <button className="action-btn" onClick={(e) => handleAnte(e)}>Dont Ante</button>
+          <button className="ante-btn" onClick={(e) => handleAnte(e)} value={true} >ANTE UP</button>
+          <button className="ante-btn" onClick={(e) => handleAnte(e)}>SIT OUT</button>
         </div>
       )
       : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id && player.status ? (

@@ -113,9 +113,9 @@ const findGame = (room) => {
 
 const findCardValue = (user, game) => {
 
-  console.log(user)
+  console.log(game)
 
-  if (user.status){
+  if (user.status && game.turn.code){
 
   const hand = [user.hand[0].code,user.hand[1].code,game.flop[0].code,game.flop[1].code,game.flop[2].code,game.river.code,game.turn.code];
 
@@ -124,7 +124,7 @@ const findCardValue = (user, game) => {
       let newString = 'T';
       newString += hand[i][1];
       hand[i] = newString;
-    }
+  }
   }
 
   const solvedHand = Hand.solve(hand);
@@ -225,7 +225,10 @@ io.on("connection", (socket) => {
       console.log("this is the user -------------------")
       console.log(user)
       if(user.hand[0].value){
-         solvedHands.push(findCardValue(user, updatedGame))
+        const potato = findCardValue(user, updatedGame)
+        if (potato){
+         solvedHands.push(potato)
+       }
        }
         });
 
@@ -253,6 +256,14 @@ io.on("connection", (socket) => {
         });
       }
 
+      if (!updatedGame.turn.code){
+        updatedGame.users.forEach((user) => {
+          if (user.status){
+          user += game.pot;
+        };
+        });
+      }
+
         updatedGame.pot = 0;
         updatedGame.winners = winnerIndex;
         updatedGame.round = 'finished'
@@ -260,7 +271,7 @@ io.on("connection", (socket) => {
         renderRoom(updatedGame.room, 'finish')
 
 
-        setTimeout(function(){restartGame(updatedGame)}, 3000);
+        setTimeout(function(){restartGame(updatedGame)}, 6000);
 
   };
 
