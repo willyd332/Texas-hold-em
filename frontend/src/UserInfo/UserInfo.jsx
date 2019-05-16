@@ -42,8 +42,6 @@ function UserInfo(props){
         player  = defaultPlayer;
   }
 
-
-
   // HANDLES THE ANTE DECISION (EMITS ANTE)
     const handleAnte = (e) => {
       console.log('anteeeeeeeeeeeeeeeeeeeeeeeeee')
@@ -101,7 +99,7 @@ function UserInfo(props){
       });
     }
 
-    console.log(game)
+
 
   return(
     <div className="user-info">
@@ -131,7 +129,16 @@ function UserInfo(props){
           </div>
         </div>
       ):(
-        <h5>Not Playing</h5>
+        <div className="actions-box" >
+          <form className="bet-form">
+            <button className="bet-form-input" type="submit" disabled={true} ></button>
+          </form>
+          <div className="user-actions">
+            <button className="action-btn" disabled={true} >Fold</button>
+            <button className="action-btn" disabled={true} >Call {game.maxBet}</button>
+            <button className="action-btn" disabled={true} >Check</button>
+          </div>
+        </div>
       )}
 
 

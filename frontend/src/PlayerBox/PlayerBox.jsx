@@ -46,7 +46,9 @@ function PlayerBox(props){
   } else if (game.round) {
     playerClass += " sittingOut"
   }
-
+  if (game.winners.includes(props.playerNum)){
+      playerClass += " winner"
+  }
 
   console.log(game.round + ' ' + props.playerNum + ' ' + game.turnNumber )
 
@@ -54,9 +56,9 @@ function PlayerBox(props){
     <div className={playerClass}>
 
       <div className="player-display">
-        <p className="player-info"><strong>{player.name}</strong></p>
-        <p className="player-info"><strong>${player.money}</strong></p>
-        {player.status && <div><img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695"></img>
+        <p className="player-info-name"><strong>{player.name}</strong></p><br/>
+        <p className="player-info-money"><strong>${player.money}</strong></p>
+        {player.status && <div className="card-back-div"><img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695"></img>
           <img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695"></img></div>}
       </div>
     </div>

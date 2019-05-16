@@ -6,7 +6,7 @@ function CardInHand(props){
     <div className="card-in-hand">
 
       {props.card.image &&
-        <img className="card-in-hand" src={props.card.image} alt={props.card.value && props.card.value + ' ' + props.card.suit} ></img>
+        <img className="card-in-hand-img" src={props.card.image} alt={props.card.value && props.card.value + ' ' + props.card.suit} ></img>
       }
         </div>
   );

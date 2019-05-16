@@ -44,6 +44,7 @@ function MainDiv(props){
 
 // START THE GAME (SETS ROUND TO ANTE)
   const startGame = async () => {
+    console.log('starting')
     io.socket.emit('startGame', io.room);
   }
 
@@ -70,10 +71,10 @@ function MainDiv(props){
         <Col md="3"><PlayerBox  game={game} setGame={setGame} playerNum={7}/></Col>
         <Col md="1"></Col>
       </Row>
-      <Row>
-        <Col md="4"><CardsBox game={game} /></Col>
-        <Col md="3"><UserInfo game={game} setGame={setGame} playerNum={5} /></Col>
-        <Col md="5"><ChatBox/></Col>
+      <Row className="info-box" >
+        <Col className="this-user" id="card-box-col" md="3"><CardsBox game={game} /></Col>
+        <Col className="this-user" md="3"><UserInfo game={game} setGame={setGame} playerNum={5} /></Col>
+        <Col className="this-user" md="5"><ChatBox/></Col>
       </Row>
     </Container>
   );
