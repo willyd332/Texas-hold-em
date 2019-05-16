@@ -27,6 +27,7 @@ function UserInfo(props){
 
 
   const io      = useContext(SocketContext);
+  console.log(io)
   const game    = props.game;
   let   player;
   let   playerIndex;
@@ -69,11 +70,12 @@ function UserInfo(props){
     }
     };
     const handleCall = () => {
+      console.log(player.betAmount)
       if (game.maxBet <= player.money){
       io.socket.emit('bet', {
         room: io.room,
         index: playerIndex,
-        bet: game.maxBet,
+        bet: game.maxBet - player.betAmount,
         type: 'call',
       });
       setCurrBet();
@@ -122,17 +124,17 @@ function UserInfo(props){
               handleBet(e)
             };
           }}>
-            <button className="bet-form-input" type="submit">Call {game.maxBet} & Raise By</button>
+            <button className="bet-form-input" type="submit">Call {game.maxBet - player.betAmount} & Raise By</button>
             <input  className="bet-form-input" type="number" onChange={(e)=>setCurrBet(e.target.value)} placeholder='0' ></input>
           </form>
           <div className="user-actions">
             <button className="action-btn" onClick={handleFold}>Fold</button>
-            <button className="action-btn" onClick={handleCall}>Call {game.maxBet}</button>
+            <button className="action-btn" onClick={handleCall}>Call {game.maxBet - player.betAmount}</button>
             <button className="action-btn" onClick={handleCheck}>Check</button>
           </div>
         </div>
       ): activePlayers.length === 1 && activePlayers[0] === player && game.round !== "ante" ? (
-        <button className="action-btn" onClick={handleCheck}>FINISH ROUND</button>
+        <button className="action-btn">Round Over</button>
       ) : (
         <div className="actions-box" >
           <form className="bet-form">
@@ -140,7 +142,7 @@ function UserInfo(props){
           </form>
           <div className="user-actions">
             <button className="action-btn" disabled={true} >Fold</button>
-            <button className="action-btn" disabled={true} >Call {game.maxBet}</button>
+            <button className="action-btn" disabled={true} >Call {game.maxBet - player.betAmount}</button>
             <button className="action-btn" disabled={true} >Check</button>
           </div>
         </div>

@@ -15,6 +15,7 @@ div {
   margin: 10px;
   text-align: center;
   box-shadow: 0px 0px 10px black;
+  overflow: visible;
 }
 .player-box-tall  {
   height: 35vh;
@@ -23,6 +24,7 @@ div {
   margin-top: 30px;
   text-align: center;
   box-shadow: 0px 0px 10px black;
+  overflow: visible;
 }
 .cards-box, .chat-box, .user-info{
   height: 30vh;
@@ -74,7 +76,7 @@ div {
   background: #860111;
 }
 .currentUser {
-  box-shadow: 0px 0px 5px blue;
+  box-shadow: 0px 0px 5px 5px	#8A2BE2;
 }
 .blueArrow {
   color: blue;
@@ -124,7 +126,10 @@ div {
   box-shadow: 0em 0em 1em white;
   overflow: visible;
   position: absolute;
+  height: 95px;
+  width: 140px;
   top: 20px;
+  right: 50px;
 }
 .player-info-name{
   display: inline-block;
@@ -164,7 +169,7 @@ div {
   width: 40px;
   height: 40px;
   left: 30px;
-  bottom: 20px;
+  top: 20px;
   border-radius: 15px;
   position: absolute;
   display: block;
@@ -189,6 +194,7 @@ div {
   margin-top: 1%;
 }
 .ante-btn{
+  border: 2px solid #4C337F;
   margin: 3%;
   width: 80%;
   height: 40%;
@@ -331,5 +337,15 @@ div {
     font-size: 30px;
     font-weight: bold;
     color: white;
+  }
+  .ante-btn{
+    border: 1px solid #4C337F;
+    margin: 5%;
+    margin-top: 30%;
+    width: 90%;
+    height: 30%;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
   }
 }
