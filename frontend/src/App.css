@@ -227,7 +227,11 @@ div {
   font-weight: bold;
   color: white;
 }
-
+.wrong-info{
+  color: red;
+  font-size: 12px;
+  display: block;
+}
 
 
 
