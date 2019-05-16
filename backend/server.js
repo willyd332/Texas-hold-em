@@ -259,7 +259,7 @@ io.on("connection", (socket) => {
       if (!updatedGame.turn.code){
         updatedGame.users.forEach((user) => {
           if (user.status){
-          user += game.pot;
+          user += updatedGame.pot;
         };
         });
       }

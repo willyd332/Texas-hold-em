@@ -99,6 +99,10 @@ function UserInfo(props){
     }
 
 
+  const activePlayers = game.users.filter((user) => {
+        return user.status
+    });
+
 
   return(
     <div className="user-info">
@@ -110,7 +114,7 @@ function UserInfo(props){
           <button className="ante-btn" onClick={(e) => handleAnte(e)}>SIT OUT</button>
         </div>
       )
-      : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id && player.status ? (
+      : game.round === 'bet' && game.turnNumber === playerIndex && game.users[game.turnNumber].socketId === io.socket.id && player.status && activePlayers.length > 1 ? (
         <div className="actions-box" >
           <form className="bet-form" onSubmit={(e)=>{
             e.preventDefault();
@@ -127,7 +131,9 @@ function UserInfo(props){
             <button className="action-btn" onClick={handleCheck}>Check</button>
           </div>
         </div>
-      ):(
+      ): activePlayers.length === 1 && activePlayers[0] === player && game.round !== "ante" ? (
+        <button className="action-btn" onClick={handleCheck}>FINISH ROUND</button>
+      ) : (
         <div className="actions-box" >
           <form className="bet-form">
             <button className="bet-form-input" type="submit" disabled={true} ></button>

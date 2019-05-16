@@ -63,10 +63,10 @@ function PlayerBox(props){
           <div className="card-back-div">
             <img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695" alt="cardBack"></img>
             <img  className="card-back" src="https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-bicycle-rider-back-1_grande.png?v=1535755695" alt="cardBack"></img></div>
-        ): game.round === "finished" ? (
-          <div className="card-back-div">
-            <img  className="card-back" src={player.hand[0].image} alt={player.hand[0].code}></img>
-            <img  className="card-back" src={player.hand[1].image}
+        ): game.round === "finished" && player.status? (
+          <div className="final-card-back-div">
+            <img  className="final-card-back" src={player.hand[0].image} alt={player.hand[0].code}></img>
+            <img  className="final-card-back" src={player.hand[1].image}
               alt={player.hand[1].code}></img></div>
         ) : (
           <div></div>

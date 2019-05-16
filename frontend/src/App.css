@@ -113,6 +113,19 @@ div {
   display: inline-block;
   position: relative;
 }
+.final-card-back{
+  height: 88px;
+  width: 62px;
+  display: inline-block;
+}
+.final-card-back-div{
+  display: inline-block;
+  margin-left: 10px;
+  box-shadow: 0em 0em 1em white;
+  overflow: visible;
+  position: absolute;
+  top: 20px;
+}
 .player-info-name{
   display: inline-block;
   margin: 3px;
@@ -130,6 +143,7 @@ div {
   margin-left: 10px;
   box-shadow: 0em 0em 1em white;
 }
+
 .game-container{
   background-color: #860111;
   height: 100vh;
@@ -151,7 +165,7 @@ div {
   height: 40px;
   left: 30px;
   bottom: 20px;
-  border-radius: 20px;
+  border-radius: 15px;
   position: absolute;
   display: block;
 }
@@ -159,14 +173,15 @@ div {
   background: green;
   border-bottom: 2px solid green;
 }
-.bet-form-input
-{
+.bet-form-input{
   display: inline-block;
   width: 100%;
   height: 50%;
   margin-top: 1%;
   font-weight: bold;
-
+}
+.playing{
+  background-color: white;
 }
 .action-btn{
   width: 100%;
@@ -270,6 +285,15 @@ div {
   .card-back-div{
     margin-left: 5px;
     box-shadow: 0em 0em 1em white;
+  }
+  .final-card-back{
+    height: 44px;
+    width: 30px;
+  }
+  .final-card-back-div{
+    margin-left: 5px;
+    box-shadow: 0em 0em 1em white;
+    overflow: visible;
   }
   .card-in-hand{
     display: block;
