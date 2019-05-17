@@ -34,11 +34,3 @@
   + A live chat box with only the current players will be in the game
   + Create game rooms with specific IDs that players can choose to join
   + Cool card animations and stuff
-
-
-
-### WIREFRAMES
-
-![alt text](./images/Title.png)
-![alt text](./images/profile.png)
-![alt text](./images/pokerTable.png)
