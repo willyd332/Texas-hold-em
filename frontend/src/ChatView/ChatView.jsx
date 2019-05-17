@@ -19,7 +19,9 @@ function ChatView(props) {
           <strong>{message.user}
             ></strong>
           {message.message}<br/></span>
-        }; }); let messagesEnd; useEffect(()=>{messagesEnd.scrollIntoView({behavior: "smooth"})}) return(
+        }; });
+        let messagesEnd; useEffect(()=>{messagesEnd.scrollIntoView({behavior: "smooth"})});
+        return(
       <div id="chatBigDiv">
         <div className="chat-view">
           <div className="chat-message">

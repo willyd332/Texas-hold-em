@@ -1,8 +1,5 @@
 import React, {useState} from 'react';
 
-// Bootstrap
-import {Container, Row, Jumbotron} from 'reactstrap';
-
 function RegisterForm(props) {
 
   const [username, setUsername] = useState('')

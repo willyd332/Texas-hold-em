@@ -20,13 +20,19 @@ function HelloWorld(props) {
 
   const checkForSession = async () => {
     if (!logged) {
-      let areYouLogged = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/session', {credentials: 'include`});
+      try {
+        console.log(process.env.REACT_APP_BACKEND_ADDRESS)
+      let areYouLogged = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/session`, {credentials: 'include'});
+
       areYouLogged = await areYouLogged.json();
 
       setSessionUser(areYouLogged.name)
       if (!logged) {
         setLogged(areYouLogged.data);
       }
+    } catch(err){
+      console.log(err);
+    }
     }
   }
 
