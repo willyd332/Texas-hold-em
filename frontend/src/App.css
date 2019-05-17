@@ -1,6 +1,11 @@
 
 @import url("https://fonts.googleapis.com/css?family=Viga");
 
+.App{
+  background-color: #860111;
+  height: 100vh
+}
+
 div {
   /* border: 1px solid black;
   margin: 1px 0px; */
@@ -71,6 +76,35 @@ div {
 }
 .messageInput:focus{
   outline: none;
+}
+#main-title{
+  background-color: #4C337F;
+  border-radius: 20px;
+}
+.auth-forms{
+  margin: 10px;
+  padding: 20px;
+  background: black;
+  text-align: center;
+  width: 100%;
+  border-radius: 30px;
+}
+.auth-input{
+  width: 50%;
+  margin: 1px;
+  display: inline-block;
+  text-align: center;
+}
+.auth-form-box{
+  width: 100%;
+}
+.title-header{
+  color: white;
+  text-shadow: 0px 0px 50px black;
+}
+.title-info{
+  background-color: #076324;
+  border-radius: 20px;
 }
 .sittingOut {
   background: #860111;
@@ -227,7 +261,22 @@ div {
   font-weight: bold;
   color: white;
 }
-
+.wrong-info{
+  color: red;
+  font-size: 12px;
+  display: block;
+}
+.session-btn{
+  width: 80%;
+  margin: 50px;
+  text-align: center;
+  float: left;
+}
+.powered-by{
+  margin: 10%;
+  position: absolute;
+  bottom: -50px;
+}
 
 
 

@@ -233,6 +233,7 @@ io.on("connection", (socket) => {
     updatedGame.users = updatedGame.users.map((user) => {
       user.hand = [{}, {}];
       user.status = false;
+      user.betAmount = 0;
       return user;
     });
 
@@ -257,10 +258,10 @@ io.on("connection", (socket) => {
 
     const gameIndex = findGame(updatedGame.room);
 
-    const solvedHands = [];
+    let solvedHands = [];
 
     updatedGame.users.forEach((user) => {
-
+      console.log(user);
       if (user.hand[0].value && user.status === true) {
         const valuedHand = findCardValue(user, updatedGame)
         solvedHands.push(valuedHand)
@@ -270,24 +271,22 @@ io.on("connection", (socket) => {
 
     let winners = [];
     let winnerIndex = [];
-    console.log("***********************SolvedHands****************")
-    console.log(solvedHands)
+
+
+    solvedHands = solvedHands.filter((hand) => {
+      console.log(hand)
+      return hand
+      });
+
+      console.log("***********************SolvedHands****************")
+      console.log(solvedHands)
 
     if (solvedHands.length > 0) {
 
       winners = Hand.winners(solvedHands);
 
-        winners.forEach((winner) => {
-          updatedGame.users.forEach((user, index) => {
-            if (winner.userId === user.socketId) {
-              winnerIndex.push(index);
-            };
-            });
-      });
+    }
 
-      console.log("WINNERS AND USERS ===========================")
-      console.log(winners)
-      console.log(updatedGame.users)
 
       if (winners.length === 0){
         winners = updatedGame.users.filter((user)=>{
@@ -295,14 +294,32 @@ io.on("connection", (socket) => {
           });
       }
 
+      console.log("WINNERS ===========================")
+      console.log(winners)
 
       winners.forEach((winner) => {
+        updatedGame.users.forEach((user, index) => {
+          console.log("user ID ------")
+          console.log(user.socketId)
+          console.log("winner ID ------")
+          console.log(winner.socketId)
+          if (winner.socketId === user.socketId) {
+            winnerIndex.push(index);
+          };
+          });
+    });
 
-        updatedGame.users[winnerIndex[0]].money += (Math.round(updatedGame.pot / winners.length));
+    console.log("WINNERSINDEX ===========================")
+    console.log(winnerIndex)
+
+
+      winnerIndex.forEach((winnerNum) => {
+
+        updatedGame.users[winnerNum].money += (Math.round(updatedGame.pot / winners.length));
 
 
       });
-    }
+
 
     if (!updatedGame.turn.code) {
       updatedGame.users.forEach((user) => {

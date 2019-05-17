@@ -1,37 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Bootstrap
-import { Container, Row, Jumbotron } from 'reactstrap';
+import { Container, Row, Jumbotron, Button } from 'reactstrap';
+
+// Components
+import LoginForm from '../LoginForm/LoginForm.jsx'
+import RegisterForm from '../RegisterForm/RegisterForm.jsx'
 
 function HelloWorld(props){
 
-  const [username,setUsername] = React.useState('')
+  const [logged,setLogged] = useState(false);
+  const [sessionUser,setSessionUser] = useState(false);
 
-  const handleChange = (e) => {
-    setUsername(e.target.value)
+  useEffect(()=>{
+
+    checkForSession();
+
+  },[])
+
+  const checkForSession = async () => {
+    if (!logged){
+    let areYouLogged = await fetch('http://localhost:9000/auth/session', {
+      credentials: 'include'
+    });
+        areYouLogged = await areYouLogged.json();
+
+    console.log(areYouLogged)
+
+    setSessionUser(areYouLogged.name)
+    if (!logged){
+    setLogged(areYouLogged.data);
+  }
+  }
   }
 
   return(
     <Container>
-      <Jumbotron fluid>
-        <Container fluid>
-          <h1 className="display-3">Hold'em.io</h1>
+      <Jumbotron id="main-title">
+        <Container className="title-info" >
+          <h1 className="display-3 title-header">Hold'em.io</h1>
           <p className="lead">Texas hold'em online</p>
         </Container>
       </Jumbotron>
-      <Row>
-        <form onSubmit={(e)=>{
-          e.preventDefault()
-          if (username){
-            props.createUser(username)
-          }
-          }}>
-          <input onChange={handleChange} value={username} placeholder={username}/>
-          <input type="submit" />
-        </form>
-      </Row>
-      <Row>
-      </Row>
+      {!logged ? (
+        <div className="auth-forms">
+          <h1>LOGIN</h1>
+          <Row>
+            <LoginForm  setCurrUser={props.setCurrUser} createUser={props.createUser} />
+          </Row>
+          <h1>REGISTER</h1>
+          <Row>
+            <RegisterForm setCurrUser={props.setCurrUser} createUser={props.createUser} />
+          </Row>
+        </div>
+      ) : (
+        <div>
+          <Button className="session-btn" onClick={()=>{
+            props.createUser(sessionUser)
+            props.setCurrUser(setSessionUser)
+          }} >JOIN GAME AS {sessionUser}</Button>
+          <Button className="session-btn" onClick={()=>{setLogged(false)}} >LOGIN AS DIFFERENT USER</Button>
+        </div>
+      )}
+      <span className="powered-by" >Powered by deckofcardsapi.com</span>
     </Container>
   );
 }
