@@ -13,6 +13,13 @@ const Hand = require('pokersolver').Hand;
 require('dotenv').config()
 require('./db/db');
 
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
+
 const corsOptions = {
   origin: process.env.REACT_ADDRESS,
   credentials: true,
@@ -32,7 +39,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json());
-app.use('/auth', authController);
+app.use('/api/v1/auth', authController);
 
 app.get('/', (req, res) => {
   res.send('Hello World')
