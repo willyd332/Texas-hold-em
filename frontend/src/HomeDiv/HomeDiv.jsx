@@ -22,7 +22,7 @@ function HelloWorld(props) {
     if (!logged) {
       try {
         console.log(process.env.REACT_APP_BACKEND_ADDRESS)
-      let areYouLogged = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/session`, {credentials: 'include'});
+      let areYouLogged = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/v1/auth/session`, {credentials: 'include'});
 
       areYouLogged = await areYouLogged.json();
 

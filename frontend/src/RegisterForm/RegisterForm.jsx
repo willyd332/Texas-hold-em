@@ -32,7 +32,7 @@ function RegisterForm(props) {
             password: currPassword
           };
 
-          let createdUser = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/register`, {
+          let createdUser = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/v1/auth/register`, {
             credentials: "include",
             method: "POST",
             body: JSON.stringify(input),

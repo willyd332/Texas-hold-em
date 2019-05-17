@@ -23,7 +23,7 @@ function LoginForm(props) {
           password: currPassword
         }
 
-        let loggedUser = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/login`, {
+        let loggedUser = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/v1/auth/login`, {
           credentials: "include",
           method: "post",
           body: JSON.stringify(input),
