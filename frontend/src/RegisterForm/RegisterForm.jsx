@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 // Bootstrap
-import { Container, Row, Jumbotron } from 'reactstrap';
+import {Container, Row, Jumbotron} from 'reactstrap';
 
-function RegisterForm(props){
+function RegisterForm(props) {
 
-  const [username,setUsername] = useState('')
-  const [currPassword,setPassword] = useState('')
-  const [conPassword,setConPassword] = useState('')
-  const [wrongInfo,setWrongInfo] = useState(false)
+  const [username, setUsername] = useState('')
+  const [currPassword, setPassword] = useState('')
+  const [conPassword, setConPassword] = useState('')
+  const [wrongInfo, setWrongInfo] = useState(false)
 
   const handleUsername = (e) => {
     setUsername(e.target.value)
@@ -23,58 +23,52 @@ function RegisterForm(props){
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (currPassword !== conPassword){
+    if (currPassword !== conPassword) {
       setWrongInfo('passwords do not match')
     } else {
 
-    if (username.length > 0 && currPassword.length > 0){
-    try {
+      if (username.length > 0 && currPassword.length > 0) {
+        try {
 
-      const input = {
-        username: username,
-        password: currPassword,
-      };
+          const input = {
+            username: username,
+            password: currPassword
+          };
 
-      console.log(input);
+          let createdUser = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/auth/register`, {
+            credentials: "include",
+            method: "POST",
+            body: JSON.stringify(input),
+            headers: {
+              'Content-Type': "application/json"
+            }
+          });
 
-      let createdUser = await fetch('http://localhost:9000/auth/register', {
-        credentials: "include",
-        method: "POST",
-        body: JSON.stringify(input),
-        headers: {
-          'Content-Type': "application/json"
+          createdUser = await createdUser.json();
+          if (createdUser.data === "Register Successful") {
+            props.createUser(username);
+            props.setCurrUser(username);
+          } else {
+            setWrongInfo("user already exists");
+          }
+        } catch (err) {
+          console.log(err)
         }
-      });
-
-      createdUser = await createdUser.json();
-      console.log(createdUser)
-      if(createdUser.data === "Register Successful"){
-        props.createUser(username);
-        props.setCurrUser(username);
-      } else {
-        setWrongInfo("user already exists");
       }
-    } catch(err){
-      console.log(err)
     }
   }
-  }
-  }
 
-  return(
-        <form className="auth-form-box" onSubmit={(e)=>{handleSubmit(e)}}>
-          {wrongInfo &&
-            <span className="wrong-info" >{wrongInfo}</span>
-          }
-          <input className="auth-input" onChange={handleUsername} value={username} placeholder="username"/>
-          <input className="auth-input" type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
-          <input className="auth-input" type="password" onChange={handleConPassword} value={conPassword} placeholder="confirm password"/>
-          <button className="auth-input" type="submit" > REGISTER </button>
-        </form>
-  );
+  return (<form className="auth-form-box" onSubmit={(e) => {
+      handleSubmit(e)
+    }}>
+    {wrongInfo && <span className="wrong-info">{wrongInfo}</span>}
+    <input className="auth-input" onChange={handleUsername} value={username} placeholder="username"/>
+    <input className="auth-input" type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
+    <input className="auth-input" type="password" onChange={handleConPassword} value={conPassword} placeholder="confirm password"/>
+    <button className="auth-input" type="submit">
+      REGISTER
+    </button>
+  </form>);
 }
-
-
-
 
 export default RegisterForm;

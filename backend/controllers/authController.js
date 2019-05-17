@@ -14,11 +14,11 @@ router.post('/register', async (req, res) => {
     console.log(req.body);
     const existingUser = await User.findOne({
       username: req.body.username
-      });
+    });
 
-      console.log(req.body)
+    console.log(req.body)
 
-    if (!existingUser){
+    if (!existingUser) {
 
 
       const encryptedPassword = await bcrypt.hashSync(req.body.password, saltiness);
@@ -28,30 +28,30 @@ router.post('/register', async (req, res) => {
       const user = await User.create({
         username: req.body.username,
         password: encryptedPassword,
-        });
+      });
 
       console.log(user)
 
-    req.session.logged = true;
-    req.session.username = req.body.username;
+      req.session.logged = true;
+      req.session.username = req.body.username;
 
-    console.log(req.session)
+      console.log(req.session)
 
-    res.json({
-      status: 200,
-      data: 'Register Successful'
-    });
+      res.json({
+        status: 200,
+        data: 'Register Successful'
+      });
 
-  } else {
+    } else {
 
-    res.json({
-      status: 200,
-      data: 'User Already Exists'
-    });
+      res.json({
+        status: 200,
+        data: 'User Already Exists'
+      });
 
-  }
+    }
 
-  } catch(err){
+  } catch (err) {
     console.log(err);
     res.send(err);
   }
@@ -65,38 +65,38 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({
       username: req.body.username
-      })
+    })
 
-      console.log(user)
+    console.log(user)
 
-      const passwordTest = await bcrypt.compareSync(req.body.password, user.password)
+    const passwordTest = await bcrypt.compareSync(req.body.password, user.password)
 
-      if (passwordTest){
+    if (passwordTest) {
 
-        req.session.logged = true;
-        req.session.username = req.body.username;
+      req.session.logged = true;
+      req.session.username = req.body.username;
 
-        console.log(req.session)
+      console.log(req.session)
 
-        res.json({
-          status: 200,
-          data: 'Login Successful',
-          user: user,
-        });
+      res.json({
+        status: 200,
+        data: 'Login Successful',
+        user: user,
+      });
 
-      } else{
+    } else {
 
-        res.json({
-          status: 200,
-          data: 'Login Unsuccesful',
-        });
+      res.json({
+        status: 200,
+        data: 'Login Unsuccesful',
+      });
 
-      }
+    }
 
-      } catch(err){
-        console.log(err);
-        res.send(err);
-      }
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
 
 });
 
@@ -106,22 +106,22 @@ router.get('/session', async (req, res) => {
 
     console.log(req.session)
 
-    if (req.session.logged){
+    if (req.session.logged) {
       res.json({
         status: 200,
         data: true,
         name: req.session.username,
-        });
+      });
     } else {
       res.json({
         status: 200,
         data: false,
         name: "",
-        });
+      });
     }
 
 
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.send(err);
   }

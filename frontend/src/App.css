@@ -1,7 +1,6 @@
-
 @import url("https://fonts.googleapis.com/css?family=Viga");
 
-.App{
+.App {
   background-color: #860111;
   height: 100vh
 }
@@ -13,7 +12,7 @@ div {
   font-family: 'Viga', sans-serif;
 }
 
-.player-box  {
+.player-box {
   height: 15vh;
   border-radius: 20px;
   width: 90%;
@@ -22,7 +21,8 @@ div {
   box-shadow: 0px 0px 10px black;
   overflow: visible;
 }
-.player-box-tall  {
+
+.player-box-tall {
   height: 35vh;
   border-radius: 20px;
   height: 80%;
@@ -31,26 +31,31 @@ div {
   box-shadow: 0px 0px 10px black;
   overflow: visible;
 }
-.cards-box, .chat-box, .user-info{
+
+.cards-box, .chat-box, .user-info {
   height: 30vh;
 }
+
 ::-webkit-scrollbar {
-    background: transparent;
-    width: 0px;
+  background: transparent;
+  width: 0px;
 }
-#chatBigDiv{
+
+#chatBigDiv {
   height: 75%;
   overflow: scroll;
   background: black;
 }
-.chat-view{
-    display: table;
-    table-layout: fixed;
-    height: 90%;
-    width: 100%;
-    max-height: 90px;
+
+.chat-view {
+  display: table;
+  table-layout: fixed;
+  height: 90%;
+  width: 100%;
+  max-height: 90px;
 }
-.chat-message{
+
+.chat-message {
   text-overflow: ellipsis;
   display: table-cell;
   height: 100%;
@@ -60,13 +65,15 @@ div {
   max-height: 0;
   text-align: left;
 }
-.message{
+
+.message {
   margin: 0;
   margin-left: 10px;
   color: white;
   font-size: 12px;
 }
-.messageInput{
+
+.messageInput {
   height: 20%;
   border: none;
   background: none;
@@ -74,14 +81,17 @@ div {
   width: 100%;
   font-size: 12px;
 }
-.messageInput:focus{
+
+.messageInput:focus {
   outline: none;
 }
-#main-title{
+
+#main-title {
   background-color: #4C337F;
   border-radius: 20px;
 }
-.auth-forms{
+
+.auth-forms {
   margin: 10px;
   padding: 20px;
   background: black;
@@ -89,72 +99,88 @@ div {
   width: 100%;
   border-radius: 30px;
 }
-.auth-input{
+
+.auth-input {
   width: 50%;
   margin: 1px;
   display: inline-block;
   text-align: center;
 }
-.auth-form-box{
+
+.auth-form-box {
   width: 100%;
 }
-.title-header{
+
+.title-header {
   color: white;
   text-shadow: 0px 0px 50px black;
 }
-.title-info{
+
+.title-info {
   background-color: #076324;
   border-radius: 20px;
 }
+
 .sittingOut {
   background: #860111;
 }
+
 .currentUser {
-  box-shadow: 0px 0px 5px 5px	#8A2BE2;
+  box-shadow: 0px 0px 5px 5px #8A2BE2;
 }
+
 .blueArrow {
   color: blue;
 }
-.cards-box{
+
+.cards-box {
   background-color: #4C337F;
   width: 100%;
   padding: 10%;
 }
-#card-box-col{
+
+#card-box-col {
   background-color: #4C337F;
 }
-.card-in-hand{
+
+.card-in-hand {
   display: inline-block;
 }
-.card-in-hand-img{
+
+.card-in-hand-img {
   height: 132px;
   width: 93px;
   display: inline-block;
 }
-@media (max-width: 1095px){
-  .card-in-hand{
+
+@media (max-width: 1095px) {
+  .card-in-hand {
     margin: -40px;
     margin-top: 0;
   }
 }
-.card-on-table{
+
+.card-on-table {
   height: 105px;
   width: 74px;
   display: inline-block;
   margin: 5px
 }
-.card-back{
+
+.card-back {
   height: 44px;
   width: 31px;
   display: inline-block;
   position: relative;
 }
-.final-card-back{
+
+.final-card-back {
   height: 88px;
   width: 62px;
   display: inline-block;
 }
-.final-card-back-div{
+
+.final-card-back-div {
   display: inline-block;
   margin-left: 10px;
   box-shadow: 0em 0em 1em white;
@@ -165,29 +191,33 @@ div {
   top: 20px;
   right: 50px;
 }
-.player-info-name{
+
+.player-info-name {
   display: inline-block;
   margin: 3px;
   font-size: 25px;
   text-shadow: 0em 0em 1em white;
 }
-.player-info-money{
+
+.player-info-money {
   display: inline-block;
   margin: 3px;
   font-size: 30px;
   text-shadow: 0em 0em 1em white;
 }
-.card-back-div{
+
+.card-back-div {
   display: inline-block;
   margin-left: 10px;
   box-shadow: 0em 0em 1em white;
 }
 
-.game-container{
+.game-container {
   background-color: #860111;
   height: 100vh;
 }
-#game-table{
+
+#game-table {
   height: 30vh;
   width: 50vw;
   text-align: center;
@@ -195,11 +225,13 @@ div {
   border-radius: 100px;
   box-shadow: 0px 0px 10px black;
 }
-.table-cards{
+
+.table-cards {
   display: inline-block;
   margin: 0px;
 }
-.poker-chips{
+
+.poker-chips {
   width: 40px;
   height: 40px;
   left: 30px;
@@ -208,26 +240,31 @@ div {
   position: absolute;
   display: block;
 }
-.bet-form{
+
+.bet-form {
   background: green;
   border-bottom: 2px solid green;
 }
-.bet-form-input{
+
+.bet-form-input {
   display: inline-block;
   width: 100%;
   height: 50%;
   margin-top: 1%;
   font-weight: bold;
 }
-.playing{
+
+.playing {
   background-color: white;
 }
-.action-btn{
+
+.action-btn {
   width: 100%;
   font-weight: bold;
   margin-top: 1%;
 }
-.ante-btn{
+
+.ante-btn {
   border: 2px solid #4C337F;
   margin: 3%;
   width: 80%;
@@ -235,20 +272,25 @@ div {
   font-weight: bold;
   font-size: 30px;
 }
-.user-actions{
+
+.user-actions {
   text-align: center;
 }
-.winner{
+
+.winner {
   background-color: green;
 }
-.actions-box{
+
+.actions-box {
   height: 100%;
   background-color: black;
 }
-.info-box{
+
+.info-box {
   text-align: center;
 }
-.this-user{
+
+.this-user {
   display: inline-block;
   background-color: white;
   border-radius: 8px;
@@ -256,38 +298,40 @@ div {
   margin-left: px;
   box-shadow: 0px 0px 10px black;
 }
+
 #pot {
   font-size: 50px;
   font-weight: bold;
   color: white;
 }
-.wrong-info{
+
+.wrong-info {
   color: red;
   font-size: 12px;
   display: block;
 }
-.session-btn{
+
+.session-btn {
   width: 80%;
   margin: 50px;
   text-align: center;
   float: left;
 }
-.powered-by{
+
+.powered-by {
   margin: 10%;
   position: absolute;
   bottom: -50px;
 }
 
-
-
-
-@media (max-width: 750px){
-  .this-user{
+@media (max-width: 750px) {
+  .this-user {
     margin: 5px;
   }
 }
-@media (max-width: 500px){
-  .poker-chips{
+
+@media (max-width: 500px) {
+  .poker-chips {
     width: 20px;
     height: 20px;
     left: 30px;
@@ -296,70 +340,81 @@ div {
     position: absolute;
     display: block;
   }
-  .bet-form{
+
+  .bet-form {
     background: green;
     height: 50%;
     font-size: 15px;
   }
-  .action-btn{
+
+  .action-btn {
     width: 100%;
     font-weight: bold;
     margin-top: 1%;
     font-size: 15px;
     border: 1px solid black;
   }
-  .actions-box{
+
+  .actions-box {
     height: 110%;
     background-color: white;
     overflow: scroll;
   }
-  .bet-form-input
-  {
+
+  .bet-form-input {
     display: block;
     width: 100%;
     height: 55%;
     font-weight: bold;
     font-size: 12px;
   }
-  .player-info-name{
+
+  .player-info-name {
     display: inline-block;
     margin: 4px;
     font-size: 18px;
     text-shadow: 0em 0em 1em white;
   }
-  .player-info-money{
+
+  .player-info-money {
     display: inline-block;
     margin: 0px;
     font-size: 15px;
     text-shadow: 0em 0em 1em white;
   }
-  .card-back{
+
+  .card-back {
     height: 22px;
     width: 15px;
   }
-  .card-back-div{
+
+  .card-back-div {
     margin-left: 5px;
     box-shadow: 0em 0em 1em white;
   }
-  .final-card-back{
+
+  .final-card-back {
     height: 44px;
     width: 30px;
   }
-  .final-card-back-div{
+
+  .final-card-back-div {
     margin-left: 5px;
     box-shadow: 0em 0em 1em white;
     overflow: visible;
   }
-  .card-in-hand{
+
+  .card-in-hand {
     display: block;
   }
-  .card-in-hand-img{
+
+  .card-in-hand-img {
     height: 92px;
     width: 65px;
     display: inline-block;
   }
 
-  .player-box-tall  {
+  .player-box-tall {
     height: 35vh;
     border-radius: 20px;
     height: 80%;
@@ -368,26 +423,29 @@ div {
     box-shadow: 0px 0px 10px black;
   }
 
-  #game-table{
+  #game-table {
     height: 30vh;
     text-align: center;
     background-color: #076324;
     border-radius: 30px;
     box-shadow: 0px 0px 10px black;
   }
-  .card-on-table{
+
+  .card-on-table {
     height: 73px;
     width: 52px;
     display: inline-block;
     margin: -10px;
     padding: 10px;
   }
+
   #pot {
     font-size: 30px;
     font-weight: bold;
     color: white;
   }
-  .ante-btn{
+
+  .ante-btn {
     border: 1px solid #4C337F;
     margin: 5%;
     margin-top: 30%;

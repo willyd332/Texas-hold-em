@@ -6,6 +6,8 @@ const session = require('express-session')
 const socketIo = require("socket.io");
 const authController = require('./controllers/authController');
 const axios = require('axios')
+const dotenv = require('dotenv')
+dotenv.config();
 const Hand = require('pokersolver').Hand;
 
 require('dotenv').config()
@@ -62,7 +64,7 @@ class Game {
     this.turn = {};
     this.round = null;
     this.winners = [];
-    this.setup = [0,1,2,3,4,5,6,7]
+    this.setup = [0, 1, 2, 3, 4, 5, 6, 7]
   }
 }
 class User {
@@ -140,27 +142,25 @@ const findCardValue = (user, game) => {
 };
 
 
-rotateSetup = (setup, usersLength) =>{
+rotateSetup = (setup, usersLength) => {
 
   let rotated = [];
-  for (let i = 0; i < usersLength; i++){
+  for (let i = 0; i < usersLength; i++) {
     rotated.push(setup.shift())
   }
   rotated.unshift(rotated.pop());
 
   newArr = rotated.concat(setup);
 
-  console.log(newArr)
 
-  return  newArr;
+  return newArr;
 
 };
 
 rotateUsers = (users) => {
 
-    users.push(users.shift());
+  users.push(users.shift());
 
-    console.log(users)
 
   return users;
 
@@ -261,7 +261,6 @@ io.on("connection", (socket) => {
     let solvedHands = [];
 
     updatedGame.users.forEach((user) => {
-      console.log(user);
       if (user.hand[0].value && user.status === true) {
         const valuedHand = findCardValue(user, updatedGame)
         solvedHands.push(valuedHand)
@@ -274,12 +273,10 @@ io.on("connection", (socket) => {
 
 
     solvedHands = solvedHands.filter((hand) => {
-      console.log(hand)
       return hand
-      });
+    });
 
-      console.log("***********************SolvedHands****************")
-      console.log(solvedHands)
+    console.log("***********************SolvedHands****************")
 
     if (solvedHands.length > 0) {
 
@@ -288,37 +285,29 @@ io.on("connection", (socket) => {
     }
 
 
-      if (winners.length === 0){
-        winners = updatedGame.users.filter((user)=>{
-          return user.status
-          });
-      }
+    if (winners.length === 0) {
+      winners = updatedGame.users.filter((user) => {
+        return user.status
+      });
+    }
 
-      console.log("WINNERS ===========================")
-      console.log(winners)
+    console.log("WINNERS ===========================")
 
-      winners.forEach((winner) => {
-        updatedGame.users.forEach((user, index) => {
-          console.log("user ID ------")
-          console.log(user.socketId)
-          console.log("winner ID ------")
-          console.log(winner.socketId)
-          if (winner.socketId === user.socketId) {
-            winnerIndex.push(index);
-          };
-          });
+    winners.forEach((winner) => {
+      updatedGame.users.forEach((user, index) => {
+        if (winner.socketId === user.socketId) {
+          winnerIndex.push(index);
+        };
+      });
     });
 
-    console.log("WINNERSINDEX ===========================")
-    console.log(winnerIndex)
+
+    winnerIndex.forEach((winnerNum) => {
+
+      updatedGame.users[winnerNum].money += (Math.round(updatedGame.pot / winners.length));
 
 
-      winnerIndex.forEach((winnerNum) => {
-
-        updatedGame.users[winnerNum].money += (Math.round(updatedGame.pot / winners.length));
-
-
-      });
+    });
 
 
     if (!updatedGame.turn.code) {
@@ -354,14 +343,9 @@ io.on("connection", (socket) => {
 
     if (activePlayers.length <= 1) {
 
-
-      console.log("------------line 274 -----------------")
-
       show(updatedGame);
 
     } else {
-
-      console.log("------------line 280 -----------------")
 
       const allCalled = updatedGame.users.filter((user) => {
         if (user.status) {
@@ -369,7 +353,6 @@ io.on("connection", (socket) => {
         };
       });
 
-      console.log(allCalled)
 
       if (allCalled.length == 0) {
 
@@ -398,8 +381,6 @@ io.on("connection", (socket) => {
           }
         });
         updatedGame.turnNumber = firstTurnFinder;
-
-        console.log("MAX BET----- " + updatedGame.maxBet)
 
         currGames[gameIndex] = updatedGame;
         renderRoom(updatedGame.room, 'bet');
@@ -448,7 +429,6 @@ io.on("connection", (socket) => {
       const updatedGame = currGames[gameIndex];
       updatedGame.round = 'ante';
       updatedGame.deckId = deck.data.deck_id;
-      console.log(updatedGame.deckId)
       currGames[gameIndex] = updatedGame;
       renderRoom(room);
     }
@@ -479,7 +459,6 @@ io.on("connection", (socket) => {
       if (data.ante) {
         axios.get(`https://deckofcardsapi.com/api/deck/${updatedGame.deckId}/draw/?count=2`)
           .then(function(res) {
-            console.log(res.data.cards)
             updatedGame.users[data.index].hand = res.data.cards
             currGames[gameIndex] = updatedGame;
             renderRoom(data.room, 'ante')
@@ -494,16 +473,11 @@ io.on("connection", (socket) => {
     } else {
       let firstTurnFinder = 'none';
       updatedGame.users.forEach((user, index) => {
-        console.log(user)
-        console.log("below is first and status 239857098342590890")
-        console.log(user.status)
-        console.log(firstTurnFinder)
         if (firstTurnFinder === 'none' && user.status) {
           firstTurnFinder = index;
         }
       });
       updatedGame.turnNumber = firstTurnFinder;
-      console.log(updatedGame.turnNumber)
       console.log("last ante had been anted ---------------")
       updatedGame.round = 'bet';
       if (data.ante) {
@@ -517,8 +491,6 @@ io.on("connection", (socket) => {
             console.log(error);
           });
       } else if (updatedGame.turnNumber === 'none') {
-
-        console.log("------------line 408 server -----------")
 
         show(updatedGame);
       } else {
@@ -548,7 +520,6 @@ io.on("connection", (socket) => {
 
     if (data.type === 'call') {
       updatedGame.users[data.index].called = true;
-      console.log(updatedGame.users[data.index].called)
     }
     if (data.type === 'raise') {
       updatedGame.users = updatedGame.users.map((user) => {
@@ -558,21 +529,13 @@ io.on("connection", (socket) => {
       updatedGame.users[data.index].called = true;
     }
 
-    // CHECKS TO SEE IF PLAYER IS THE ONE WHO RAISED AND SKIPS THEM
-    console.log(updatedGame.maxBet + " THIS IS THE MAX BET")
-    console.log(updatedGame.users[updatedGame.turnNumber].betAmount + " THIS IS THE USERS MAX BET")
-
-
     // if the next player exists
     if (updatedGame.turnNumber < updatedGame.users.length - 1) {
 
-      // if (updatedGame.maxBet == 0){
-      console.log("normal turn increase")
-      console.log(updatedGame)
-      console.log(updatedGame.users)
+
       updatedGame.turnNumber += 1;
-      // }
-      console.log(updatedGame.turnNumber)
+
+      console.log("normal turn increase " + updatedGame.turnNumber)
 
       // if the next (now current) players status is false
       if (!updatedGame.users[updatedGame.turnNumber].status) {
@@ -644,7 +607,6 @@ io.on("connection", (socket) => {
   socket.on('fold', (data) => {
 
     console.log("FOLDING ---------------------------")
-    console.log(data)
 
     const gameIndex = findGame(data.room);
     const updatedGame = currGames[gameIndex];
@@ -682,7 +644,9 @@ io.on("connection", (socket) => {
       console.log("updating turnNumber to " + updatedGame.turnNumber)
       currGames[gameIndex] = updatedGame;
 
-      if (updatedGame.users.filter((user)=>{return user.status}).length === 1){
+      if (updatedGame.users.filter((user) => {
+          return user.status
+        }).length === 1) {
         show(updatedGame)
       } else {
         renderRoom(data.room, 'bet');
