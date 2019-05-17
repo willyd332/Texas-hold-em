@@ -49,7 +49,8 @@ function RegisterForm(props){
       createdUser = await createdUser.json();
       console.log(createdUser)
       if(createdUser.data === "Register Successful"){
-        props.createUser(username)
+        props.createUser(username);
+        props.setCurrUser(username);
       } else {
         setWrongInfo("user already exists");
       }
@@ -61,14 +62,14 @@ function RegisterForm(props){
   }
 
   return(
-        <form onSubmit={(e)=>{handleSubmit(e)}}>
+        <form className="auth-form-box" onSubmit={(e)=>{handleSubmit(e)}}>
           {wrongInfo &&
             <span className="wrong-info" >{wrongInfo}</span>
           }
-          <input onChange={handleUsername} value={username} placeholder="username"/>
-          <input type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
-          <input type="password" onChange={handleConPassword} value={conPassword} placeholder="confirm password"/>
-          <button type="submit" > REGISTER </button>
+          <input className="auth-input" onChange={handleUsername} value={username} placeholder="username"/>
+          <input className="auth-input" type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
+          <input className="auth-input" type="password" onChange={handleConPassword} value={conPassword} placeholder="confirm password"/>
+          <button className="auth-input" type="submit" > REGISTER </button>
         </form>
   );
 }

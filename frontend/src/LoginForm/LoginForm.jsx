@@ -38,7 +38,8 @@ function LoginForm(props){
       loggedUser = await loggedUser.json();
       console.log(loggedUser)
       if(loggedUser.data === "Login Successful"){
-        props.createUser(username)
+        props.createUser(username);
+        props.setCurrUser(username);
       } else {
         setWrongInfo(true);
       }
@@ -49,13 +50,13 @@ function LoginForm(props){
   }
 
   return(
-        <form onSubmit={(e)=>{handleSubmit(e)}}>
+        <form className="auth-form-box" onSubmit={(e)=>{handleSubmit(e)}}>
           {wrongInfo &&
             <span className="wrong-info" >wrong username or password</span>
           }
-          <input onChange={handleUsername} value={username} placeholder="username"/>
-          <input type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
-          <button type="submit" > LOGIN </button>
+          <input className="auth-input" onChange={handleUsername} value={username} placeholder="username"/>
+          <input className="auth-input" type="password" onChange={handlePassword} value={currPassword} placeholder="password"/>
+          <button className="auth-input" type="submit" > LOGIN </button>
         </form>
   );
 }

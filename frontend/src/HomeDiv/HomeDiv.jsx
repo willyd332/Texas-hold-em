@@ -40,35 +40,29 @@ function HelloWorld(props){
         <Container className="title-info" >
           <h1 className="display-3 title-header">Hold'em.io</h1>
           <p className="lead">Texas hold'em online</p>
-          <span>Powered by deckofcardsapi.com</span>
         </Container>
       </Jumbotron>
       {!logged ? (
         <div className="auth-forms">
           <h1>LOGIN</h1>
           <Row>
-            <LoginForm createUser={props.createUser} />
+            <LoginForm  setCurrUser={props.setCurrUser} createUser={props.createUser} />
           </Row>
           <h1>REGISTER</h1>
           <Row>
-            <RegisterForm createUser={props.createUser} />
+            <RegisterForm setCurrUser={props.setCurrUser} createUser={props.createUser} />
           </Row>
         </div>
       ) : (
         <div>
-          <Button onClick={()=>{props.createUser(sessionUser)}} >JOIN GAME AS {sessionUser}</Button>
-          <Button onClick={()=>{setLogged(false)}} >LOGIN AS DIFFERENT USER</Button>
+          <Button className="session-btn" onClick={()=>{
+            props.createUser(sessionUser)
+            props.setCurrUser(setSessionUser)
+          }} >JOIN GAME AS {sessionUser}</Button>
+          <Button className="session-btn" onClick={()=>{setLogged(false)}} >LOGIN AS DIFFERENT USER</Button>
         </div>
       )}
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <span>Powered by deckofcardsapi.com</span>
+      <span className="powered-by" >Powered by deckofcardsapi.com</span>
     </Container>
   );
 }
