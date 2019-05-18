@@ -1,4 +1,18 @@
 # holdem.io
+## LINK TO GAME: https://holdem-io.herokuapp.com/
+
+
+### Description
+
+  holdem.io is an online multiplayer Texas Hold'em simulation built using socket.io, React.js, and Express.js. I wanted to build an app that would take advantage of reactive component's state and socket.io's immediacy. 
+  The game requires two players to join before it begins, and after that any amount of players can join. Each poker room holds eight players and if more than eight players join, a new game room will be created ad infinitum. The game logic works by essentially holding a shared game state in the backened that is updated when players make an action, and then sent out to each player in a given room to rerender all the game boards. I used deckofcardsapi.com to handle the deck logic, and the pokersolver npm module to determine the winners of each hand. All of the other game logic exists mostly on the backend and within various React.js components.
+  Currently the game is fully functional as long as more than one player joins. The users are stored in a MongoDB database with full password encryption. In the future I plan to add better styling and more user functionality.
+
+
+
+
+
+
 
 
 
